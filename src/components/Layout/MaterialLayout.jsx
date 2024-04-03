@@ -1,30 +1,19 @@
-import { useState, useEffect } from 'react';
-import { CssBaseline, useMediaQuery, Box } from '@mui/material';
-import { ThemeProvider } from '@mui/system';
-import { lightTheme, darkTheme, rootStyle } from './LayoutStyles';
-import { Typography, Link } from '@mui/material';
 import { Outlet } from 'react-router-dom';
-import Navbar from './Navbar';
+import { CssBaseline, Box, Typography, Link } from '@mui/material';
+import { useCustomTheme } from './ThemeContext';
+import { rootStyle } from './LayoutStyles';
 import { StyledPaper } from './SharedStyles';
+import Navbar from './Navbar';
 
 export default function MaterialLayout({ children }) {
-  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-  const [theme, setTheme] = useState(prefersDarkMode ? darkTheme : lightTheme);
-
-  useEffect(() => {
-    setTheme(prefersDarkMode ? darkTheme : lightTheme);
-  }, [prefersDarkMode]);
-  
-  const toggleColorMode = () => {
-    setTheme(prevTheme => (prevTheme === lightTheme ? darkTheme : lightTheme));
-  };
+  const { theme } = useCustomTheme();
 
   return (
-    <ThemeProvider theme={theme}>
+    <>
       <CssBaseline />
       <div sx={rootStyle(theme)}>
         <header>
-          <Navbar toggleColorMode={toggleColorMode} />
+          <Navbar />
         </header>
         <main>
           <Box sx={{ my: { xs: 0, sm: 2 } }}>
@@ -37,7 +26,7 @@ export default function MaterialLayout({ children }) {
       <footer>
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </footer>
-    </ThemeProvider>
+    </>
   );
 }
 
