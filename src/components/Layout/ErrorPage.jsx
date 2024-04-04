@@ -1,5 +1,4 @@
 import { useRouteError } from "react-router-dom";
-import { StyledPaper } from 'components/Layout/SharedStyles';
 
 export default function ErrorPage() {
   const error = useRouteError();

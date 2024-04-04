@@ -47,28 +47,41 @@ const Navbar = () => {
           </Menu>
         </Box>
 
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1, display: { xs: currentUser ? 'none' : 'flex', sm: 'flex' } }}>
-          Epicenter 2.0
-        </Typography>
-        {currentUser ? (
-          <>
-            <Button color="inherit" onClick={handleToggleAccountMenu}>
-              {currentUser.email}
-            </Button>
-            <Menu anchorEl={accountMenuAccountMenuAnchorEl} open={accountMenuOpen} onClose={handleToggleAccountMenu}>
-              <MenuItem onClick={(e) => { signOut(); handleToggleAccountMenu(e); }}>Sign Out</MenuItem>
-            </Menu>
-          </>
-        ) : (
-          <>
-            {location.pathname !== '/login' &&
-              <Button color="inherit" component={Link} to="/login">
-                Sign In
-              </Button>
-            }
-          </>
-        )}
-        <ColorModeToggle />
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+          <Typography component={Link} to='/' variant="h6" color='inherit' sx={{
+              textDecoration: 'none',
+              padding: '6px 16px',
+              borderRadius: '4px',
+              display: { xs: currentUser ? 'none' : 'flex', sm: 'flex' },
+              '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.08)' },
+            }}
+          >
+            Epicenter 2.0
+          </Typography>
+
+          <Box>
+            {currentUser ? (
+              <>
+                <Button color="inherit" onClick={handleToggleAccountMenu}>
+                  {currentUser.email}
+                </Button>
+                <Menu anchorEl={accountMenuAccountMenuAnchorEl} open={accountMenuOpen} onClose={handleToggleAccountMenu}>
+                  <MenuItem onClick={(e) => { signOut(); handleToggleAccountMenu(e); }}>Sign Out</MenuItem>
+                </Menu>
+              </>
+            ) : (
+              <>
+                {location.pathname !== '/login' &&
+                  <Button color="inherit" component={Link} to="/login">
+                    Sign In
+                  </Button>
+                }
+              </>
+            )}
+            <ColorModeToggle />
+          </Box>
+
+        </Box>
       </Toolbar>
     </AppBar>
   );

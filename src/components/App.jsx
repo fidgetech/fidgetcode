@@ -12,25 +12,25 @@ import { NotificationProvider } from 'components/Layout/NotificationContext';
 import { Notification } from 'components/Layout/Notification';
 import { ThemeProviderWrapper } from 'components/Layout/ThemeContext';
 
-function App() {
+export default function App() {
   const router = createBrowserRouter([
     {
       path: '/',
-      element: <PrivateRoute><MaterialLayout /></PrivateRoute>,
-      errorElement: <MaterialLayout><ErrorPage /></MaterialLayout>,
+      element: <LoggedInUserRoute><MaterialLayout /></LoggedInUserRoute>,
+      errorElement: <LoggedInUserRoute><MaterialLayout><ErrorPage /></MaterialLayout></LoggedInUserRoute>,
       children:
       [
         {
           index: true,
-          element: <Typography><Link component={RouterLink} to='/page1'>Link to page 1</Link></Typography>
+          element: <Typography><Link component={RouterLink} to='/student'>Link to student page</Link><br /><Link component={RouterLink} to='/admin'>Link to admin page</Link></Typography>
         },
         {
-          path: '/page1',
-          element: <Typography>hello '/page1'</Typography>
+          path: '/student',
+          element: <StudentRoute><Typography>hello '/student'</Typography></StudentRoute>
         },
         {
-          path: '/page2',
-          element: <Typography>hello '/page2'</Typography>
+          path: '/admin',
+          element: <AdminRoute><Typography>hello '/admin'</Typography></AdminRoute>
         },
       ]
     },
@@ -52,9 +52,38 @@ function App() {
   )
 }
 
-const PrivateRoute = ({ children }) => {
+const LoggedInUserRoute = ({ children }) => {
   const { currentUser } = useAuth();
   return currentUser ? children : <Navigate to="/login" />;
 };
 
-export default App
+const AdminRoute = ({ children }) => {
+  const { currentUser, currentAdmin } = useAuth();
+  if (currentAdmin) {
+    return children;
+  } else if (currentUser) {
+    return <PermissionsErrorPage />;
+  } else {
+    return <Navigate to = '/login' />;
+  }
+}
+
+const StudentRoute = ({ children }) => {
+  const { currentUser, currentStudent } = useAuth();
+  if (currentStudent) {
+    return children;
+  } else if (currentUser) {
+    return <PermissionsErrorPage />;
+  } else {
+    return <Navigate to = '/login' />;
+  }
+}
+
+const PermissionsErrorPage = () => {
+  return (
+    <Typography>
+      You do not have permission to view this page.<br />
+      Return to <Link component={RouterLink} to='/'>home page</Link>?
+    </Typography>
+  );
+}
