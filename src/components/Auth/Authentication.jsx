@@ -10,11 +10,11 @@ import { Avatar, Container, Box } from '@mui/material';
 
 export default function Authentication() {
   const [showReset, setShowReset] = useState(false);
-  const { currentUser } = useAuth();
+  const { isSignedIn } = useAuth();
 
   const toggleReset = () => setShowReset((prev) => !prev);
 
-  if (currentUser) {
+  if (isSignedIn) {
     return <Navigate to="/" />;
   }
 

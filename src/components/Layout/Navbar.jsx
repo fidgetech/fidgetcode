@@ -7,7 +7,7 @@ import ColorModeToggle from 'components/Layout/ColorModeToggle';
 import { useAuth } from 'components/Auth/AuthContext';
 
 const Navbar = () => {
-  const { currentUser, signOut } = useAuth();
+  const { currentUser, isSignedIn, signOut } = useAuth();
   const [accountMenuAccountMenuAnchorEl, setAccountMenuAnchorEl] = useState(null);
   const accountMenuOpen = Boolean(accountMenuAccountMenuAnchorEl);
   const [hamburgerMenuAnchorEl, setHamburgerMenuAnchorEl] = useState(null);
@@ -27,7 +27,7 @@ const Navbar = () => {
       <Toolbar>
 
         {/* hamburger menu for xs screns; only when logged in */}
-        <Box sx={{ flexGrow: 1, display: { xs: currentUser ? 'flex' : 'none', sm: 'none' } }}>
+        <Box sx={{ flexGrow: 1, display: { xs: isSignedIn ? 'flex' : 'none', sm: 'none' } }}>
           <IconButton size="large" color="inherit" aria-label="open drawer" onClick={handleToggleHamburgerMenu}>
             <MenuIcon />
           </IconButton>
@@ -52,7 +52,7 @@ const Navbar = () => {
               textDecoration: 'none',
               padding: '6px 16px',
               borderRadius: '4px',
-              display: { xs: currentUser ? 'none' : 'flex', sm: 'flex' },
+              display: { xs: isSignedIn ? 'none' : 'flex', sm: 'flex' },
               '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.08)' },
             }}
           >
@@ -60,10 +60,10 @@ const Navbar = () => {
           </Typography>
 
           <Box>
-            {currentUser ? (
+            {isSignedIn ? (
               <>
                 <Button color="inherit" onClick={handleToggleAccountMenu}>
-                  {currentUser.email}
+                  {currentUser.name}
                 </Button>
                 <Menu anchorEl={accountMenuAccountMenuAnchorEl} open={accountMenuOpen} onClose={handleToggleAccountMenu}>
                   <MenuItem onClick={(e) => { signOut(); handleToggleAccountMenu(e); }}>Sign Out</MenuItem>

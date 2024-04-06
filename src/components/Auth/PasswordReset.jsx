@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import { auth } from 'src/firebase.js';
 import { Alert, Button, Grid, Box, TextField } from '@mui/material';
-import { getAuth, sendPasswordResetEmail } from 'firebase/auth';
+import { sendPasswordResetEmail } from 'firebase/auth';
 import Loading from 'components/Layout/Loading';
 import { useNotification } from 'components/Layout/NotificationContext';
 
@@ -15,7 +16,6 @@ export default function PasswordReset({ toggleReset }) {
     setLoading(true);
     const data = new FormData(event.currentTarget);
     const email = data.get('email');
-    const auth = getAuth();
     try {
       await sendPasswordResetEmail(auth, email);
       setNotification('Sent password reset email');

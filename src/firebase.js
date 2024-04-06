@@ -1,7 +1,6 @@
-// import { initializeApp, getApps } from "firebase/app";
-// import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "firebase/app-check";
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -13,13 +12,8 @@ const firebaseConfig = {
   databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL
 }
 
-// if (!getApps().length) {
-//   const app = initializeApp(firebaseConfig);
-//   initializeAppCheck(app, {
-//     provider: new ReCaptchaEnterpriseProvider(process.env.REACT_APP_RECAPTCHA_SITE_KEY),
-//     isTokenAutoRefreshEnabled: true
-//   });
-// }
-
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
+
+export { auth, db };

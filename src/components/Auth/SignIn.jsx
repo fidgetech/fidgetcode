@@ -1,23 +1,23 @@
 import { useState } from 'react';
+import { auth } from 'src/firebase.js';
+import { useAuth } from 'components/Auth/AuthContext';
 import { Alert, Button, Grid, Box, TextField } from '@mui/material';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import Loading from 'components/Layout/Loading';
 
 export default function SignIn({ toggleReset }) {
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const { loading, setLoading } = useAuth();
 
   const handleSignIn = async (event) => {
     event.preventDefault();
-    setError(null);
     setLoading(true);
+    setError(null);
     const data = new FormData(event.currentTarget);
     const email = data.get('email');
     const password = data.get('password');
-    const auth = getAuth();
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      return <Navigate to="/" />;
     } catch (error) {
       setLoading(false);
       setError(error.message);

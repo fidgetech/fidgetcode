@@ -1,16 +1,17 @@
 // import reactLogo from './assets/react.svg'
 // import viteLogo from '/vite.svg'
 // import './App.css'
-import '../firebase.js'; // initializes firebase and firebase auth
 import { createBrowserRouter, RouterProvider, Navigate, Link as RouterLink } from "react-router-dom";
 import ErrorPage from "components/Layout/ErrorPage.jsx";
 import MaterialLayout from 'components/Layout/MaterialLayout';
 import { AuthProvider, useAuth } from 'components/Auth/AuthContext';
 import Authentication from 'components/Auth/Authentication';
-import { Typography, Link } from '@mui/material';
+import { Typography, Link, Box, CssBaseline } from '@mui/material';
 import { NotificationProvider } from 'components/Layout/NotificationContext';
 import { Notification } from 'components/Layout/Notification';
 import { ThemeProviderWrapper } from 'components/Layout/ThemeContext';
+import Loading from 'components/Layout/Loading';
+import { StyledPaper } from 'components/Layout/SharedStyles';
 
 export default function App() {
   const router = createBrowserRouter([
@@ -30,7 +31,7 @@ export default function App() {
         },
         {
           path: '/admin',
-          element: <AdminRoute><Typography>hello '/admin'</Typography></AdminRoute>
+          element: <AdminRoute><Test /></AdminRoute>
         },
       ]
     },
@@ -53,15 +54,30 @@ export default function App() {
 }
 
 const LoggedInUserRoute = ({ children }) => {
-  const { currentUser } = useAuth();
-  return currentUser ? children : <Navigate to="/login" />;
+  const { isSignedIn, loading } = useAuth();
+  if (loading) {
+    return (
+      <>
+        <CssBaseline />
+        <Box sx={{ my: { xs: 0, sm: 2 } }}>
+          <StyledPaper>
+            <Loading text='' />
+          </StyledPaper>
+        </Box>
+      </>
+    );
+  } else if (isSignedIn) {
+    return children;
+  } else {
+    return <Navigate to="/login" />;
+  }
 };
 
 const AdminRoute = ({ children }) => {
-  const { currentUser, currentAdmin } = useAuth();
-  if (currentAdmin) {
+  const { isSignedIn, isAdmin } = useAuth();
+  if (isAdmin) {
     return children;
-  } else if (currentUser) {
+  } else if (isSignedIn) {
     return <PermissionsErrorPage />;
   } else {
     return <Navigate to = '/login' />;
@@ -69,10 +85,10 @@ const AdminRoute = ({ children }) => {
 }
 
 const StudentRoute = ({ children }) => {
-  const { currentUser, currentStudent } = useAuth();
-  if (currentStudent) {
+  const { isSignedIn, isStudent } = useAuth();
+  if (isStudent) {
     return children;
-  } else if (currentUser) {
+  } else if (isSignedIn) {
     return <PermissionsErrorPage />;
   } else {
     return <Navigate to = '/login' />;
@@ -85,5 +101,11 @@ const PermissionsErrorPage = () => {
       You do not have permission to view this page.<br />
       Return to <Link component={RouterLink} to='/'>home page</Link>?
     </Typography>
+  );
+}
+
+const Test = () => {
+  return (
+    <Typography>hello '/admin'</Typography>
   );
 }
