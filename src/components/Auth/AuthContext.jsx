@@ -12,6 +12,7 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [role, setRole] = useState(null);
+  const [trackId, setTrackId] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,12 +22,15 @@ export const AuthProvider = ({ children }) => {
       if (firebaseUser) {
         firebaseUser.getIdTokenResult().then((idTokenResult) => {
           const role = idTokenResult.claims.role;
+          const trackId = idTokenResult.claims.trackId;
+          console.log('User signed in, role, trackId:', firebaseUser.uid, role, trackId)
           if (!validRoles.includes(role)) return signOut();
           const userRef = doc(db, `${role}s`, firebaseUser.uid);
           getDoc(userRef).then((doc) => {
             if (!doc.exists()) return signOut();
             setCurrentUser(doc.data());
             setRole(role);
+            setTrackId(trackId);
             setLoading(false);
           });
         });
@@ -34,6 +38,7 @@ export const AuthProvider = ({ children }) => {
         console.log('No user signed in.')
         setCurrentUser(null);
         setRole(null);
+        setTrackId(null);
         setLoading(false);
       }
     });
@@ -53,6 +58,7 @@ export const AuthProvider = ({ children }) => {
     loading,
     setLoading,
     signOut,
+    trackId,
   };
 
   return (

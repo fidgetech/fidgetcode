@@ -12,6 +12,8 @@ import { Notification } from 'components/Layout/Notification';
 import { ThemeProviderWrapper } from 'components/Layout/ThemeContext';
 import Loading from 'components/Layout/Loading';
 import { StyledPaper } from 'components/Layout/SharedStyles';
+import { StudentDataProvider } from "components/StudentDataContext";
+import StudentHome from "components/StudentHome";
 
 export default function App() {
   const router = createBrowserRouter([
@@ -23,6 +25,10 @@ export default function App() {
       [
         {
           index: true,
+          element: <Home />
+        },
+        {
+          path: '/links',
           element: <Typography><Link component={RouterLink} to='/student'>Link to student page</Link><br /><Link component={RouterLink} to='/admin'>Link to admin page</Link></Typography>
         },
         {
@@ -43,12 +49,14 @@ export default function App() {
 
   return (
     <AuthProvider>
-      <ThemeProviderWrapper>
-        <NotificationProvider>
-          <Notification />
-          <RouterProvider router={router} />
-        </NotificationProvider>
-      </ThemeProviderWrapper>
+      <StudentDataProvider>
+        <ThemeProviderWrapper>
+          <NotificationProvider>
+            <Notification />
+            <RouterProvider router={router} />
+          </NotificationProvider>
+        </ThemeProviderWrapper>
+      </StudentDataProvider>
     </AuthProvider>
   )
 }
@@ -61,7 +69,7 @@ const LoggedInUserRoute = ({ children }) => {
         <CssBaseline />
         <Box sx={{ my: { xs: 0, sm: 2 } }}>
           <StyledPaper>
-            <Loading text='' />
+            <Loading text='Logging in...' />
           </StyledPaper>
         </Box>
       </>
@@ -109,3 +117,8 @@ const Test = () => {
     <Typography>hello '/admin'</Typography>
   );
 }
+
+const Home = () => {
+  const { isAdmin } = useAuth();
+  return isAdmin ? <Test /> : <StudentHome />;
+};
