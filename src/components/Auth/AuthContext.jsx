@@ -23,7 +23,6 @@ export const AuthProvider = ({ children }) => {
         firebaseUser.getIdTokenResult().then((idTokenResult) => {
           const role = idTokenResult.claims.role;
           const trackId = idTokenResult.claims.trackId;
-          console.log('User signed in, role, trackId:', firebaseUser.uid, role, trackId)
           if (!validRoles.includes(role)) return signOut();
           const userRef = doc(db, `${role}s`, firebaseUser.uid);
           getDoc(userRef).then((doc) => {
@@ -32,6 +31,8 @@ export const AuthProvider = ({ children }) => {
             setRole(role);
             setTrackId(trackId);
             setLoading(false);
+            console.log('User data loaded');
+            console.log('Logged in as', role, 'with trackId', trackId);
           });
         });
       } else {

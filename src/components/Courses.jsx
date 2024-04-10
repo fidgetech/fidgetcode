@@ -1,21 +1,31 @@
-import { List, ListItem, ListItemText } from '@mui/material';
-import { useStudentData } from './StudentDataContext';
+import { useEffect } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
+import { List, ListItem, ListItemText, ListItemButton } from '@mui/material';
+import { useStudentData } from 'components/StudentDataContext';
 import Loading from 'components/Layout/Loading';
 
-const CoursesList = () => {
-  const { studentData, loading } = useStudentData();
+const Courses = () => {
+  const { track, courses, fetchTrackAndCourses } = useStudentData();
 
-  if (loading) return <Loading text='Loading student data...' />;
-  if (!studentData) return <div>Error loading student data :(</div>;
+  useEffect(() => {
+    if (!track || !courses) {
+      fetchTrackAndCourses();
+    }
+  }, [track, courses]);
 
-  const { track, courses } = studentData;
+  if (!track || !courses) {
+    return <Loading text='Loading courses...'/>;
+  }
+
   return (
     <>
       <h2>{track.title}</h2>
       <List>
         {courses.map((course) => (
-          <ListItem key={course.id}>
-            <ListItemText primary={course.title} secondary={course.trackId} />
+          <ListItem key={course.id} disablePadding>
+            <ListItemButton component={RouterLink} to={`/student/courses/${course.slug}`}>
+              <ListItemText primary={course.title} secondary={course.trackId} />
+            </ListItemButton>
           </ListItem>
         ))}
       </List>
@@ -23,4 +33,4 @@ const CoursesList = () => {
   );
 };
 
-export default CoursesList;
+export default Courses;

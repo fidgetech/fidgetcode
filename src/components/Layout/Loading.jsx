@@ -1,5 +1,5 @@
+import { Typography, Box } from '@mui/material';
 import { TailSpin } from 'react-loading-icons'
-import { Box, Typography } from '@mui/material';
 
 export default function Loading({ text='Thinking...', isHeading=false }) {
   return (
@@ -10,4 +10,4 @@ export default function Loading({ text='Thinking...', isHeading=false }) {
       </Typography>
     </Box>
   );
-}
+};

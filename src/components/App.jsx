@@ -1,50 +1,47 @@
 // import reactLogo from './assets/react.svg'
 // import viteLogo from '/vite.svg'
 // import './App.css'
-import { createBrowserRouter, RouterProvider, Navigate, Link as RouterLink } from "react-router-dom";
-import ErrorPage from "components/Layout/ErrorPage.jsx";
+import { createBrowserRouter, RouterProvider, Navigate, Outlet } from "react-router-dom";
+import { RoutingErrorPage, PermissionsErrorPage } from "components/Layout/ErrorPages.jsx";
 import MaterialLayout from 'components/Layout/MaterialLayout';
 import { AuthProvider, useAuth } from 'components/Auth/AuthContext';
 import Authentication from 'components/Auth/Authentication';
-import { Typography, Link, Box, CssBaseline } from '@mui/material';
+import { Typography } from '@mui/material';
 import { NotificationProvider } from 'components/Layout/NotificationContext';
 import { Notification } from 'components/Layout/Notification';
 import { ThemeProviderWrapper } from 'components/Layout/ThemeContext';
 import Loading from 'components/Layout/Loading';
-import { StyledPaper } from 'components/Layout/SharedStyles';
 import { StudentDataProvider } from "components/StudentDataContext";
 import StudentHome from "components/StudentHome";
+import Course from "components/Course";
 
 export default function App() {
   const router = createBrowserRouter([
     {
       path: '/',
-      element: <LoggedInUserRoute><MaterialLayout /></LoggedInUserRoute>,
-      errorElement: <LoggedInUserRoute><MaterialLayout><ErrorPage /></MaterialLayout></LoggedInUserRoute>,
-      children:
-      [
+      element: <MainLayout />,
+      errorElement: <RoutingErrorPage />,
+      children: [
         {
           index: true,
-          element: <Home />
+          element: <ProtectedRoute allowedRoles={['admin', 'student']}><Home /></ProtectedRoute>
         },
         {
-          path: '/links',
-          element: <Typography><Link component={RouterLink} to='/student'>Link to student page</Link><br /><Link component={RouterLink} to='/admin'>Link to admin page</Link></Typography>
+          path: 'admin/*',
+          element: <ProtectedRoute allowedRoles={['admin']}><Outlet /></ProtectedRoute>,
+          children: adminRoutes
         },
         {
-          path: '/student',
-          element: <StudentRoute><Typography>hello '/student'</Typography></StudentRoute>
+          path: 'student/*',
+          element: <ProtectedRoute allowedRoles={['student']}><Outlet /></ProtectedRoute>,
+          children: studentRoutes
         },
         {
-          path: '/admin',
-          element: <AdminRoute><Test /></AdminRoute>
+          path: '/login',
+          element: <Authentication />
         },
       ]
-    },
-    {
-      path: '/login',
-      element: <MaterialLayout><Authentication /></MaterialLayout>
-    },
+    }
   ]);
 
   return (
@@ -61,64 +58,43 @@ export default function App() {
   )
 }
 
-const LoggedInUserRoute = ({ children }) => {
-  const { isSignedIn, loading } = useAuth();
-  if (loading) {
-    return (
-      <>
-        <CssBaseline />
-        <Box sx={{ my: { xs: 0, sm: 2 } }}>
-          <StyledPaper>
-            <Loading text='Logging in...' />
-          </StyledPaper>
-        </Box>
-      </>
-    );
-  } else if (isSignedIn) {
-    return children;
-  } else {
-    return <Navigate to="/login" />;
-  }
+const studentRoutes = [
+  { path: '', element: <StudentHome /> },
+  { path: 'courses/:slug', element: <Course /> },
+];
+
+const adminRoutes = [
+  { path: '', element: <Typography>Admin routes coming soon...</Typography> },
+];
+
+const MainLayout = () => {
+  return (
+    <MaterialLayout>
+      <Outlet />
+    </MaterialLayout>
+  );
 };
 
-const AdminRoute = ({ children }) => {
-  const { isSignedIn, isAdmin } = useAuth();
-  if (isAdmin) {
-    return children;
-  } else if (isSignedIn) {
-    return <PermissionsErrorPage />;
-  } else {
-    return <Navigate to = '/login' />;
+const ProtectedRoute = ({ children, allowedRoles }) => {
+  const { loading, isSignedIn, isAdmin, isStudent } = useAuth();
+  const userRole = isAdmin ? 'admin' : isStudent ? 'student' : null;
+
+  if (loading) {
+    return <Loading text="Checking user permissions..." />;
   }
-}
 
-const StudentRoute = ({ children }) => {
-  const { isSignedIn, isStudent } = useAuth();
-  if (isStudent) {
-    return children;
-  } else if (isSignedIn) {
-    return <PermissionsErrorPage />;
-  } else {
-    return <Navigate to = '/login' />;
+  if (!isSignedIn) {
+    return <Navigate to="/login" />;
   }
-}
 
-const PermissionsErrorPage = () => {
-  return (
-    <Typography>
-      You do not have permission to view this page.<br />
-      Return to <Link component={RouterLink} to='/'>home page</Link>?
-    </Typography>
-  );
-}
+  if (!allowedRoles.includes(userRole)) {
+    return <PermissionsErrorPage />;
+  }
 
-const Test = () => {
-  return (
-    <Typography>hello '/admin'</Typography>
-  );
-}
+  return children;
+};
 
 const Home = () => {
   const { isAdmin } = useAuth();
-  return isAdmin ? <Test /> : <StudentHome />;
+  return <Navigate to={isAdmin ? '/admin' : '/student'} />;
 };

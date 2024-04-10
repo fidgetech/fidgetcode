@@ -1,4 +1,3 @@
-import { Outlet } from 'react-router-dom';
 import { CssBaseline, Box, Typography, Link } from '@mui/material';
 import { useCustomTheme } from './ThemeContext';
 import { rootStyle } from './LayoutStyles';
@@ -18,7 +17,7 @@ export default function MaterialLayout({ children }) {
         <main>
           <Box sx={{ my: { xs: 0, sm: 2 } }}>
             <StyledPaper>
-              {children || <Outlet />}
+              {children}
             </StyledPaper>
           </Box>
         </main>

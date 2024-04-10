@@ -1,8 +1,8 @@
-import CoursesList from './Courses';
+import Courses from './Courses';
 
 const StudentHome = () => {
   return (
-    <CoursesList />
+    <Courses />
   );
 };
 
