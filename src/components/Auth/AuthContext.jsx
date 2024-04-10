@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }) => {
           const userRef = doc(db, `${role}s`, firebaseUser.uid);
           getDoc(userRef).then((doc) => {
             if (!doc.exists()) return signOut();
-            setCurrentUser(doc.data());
+            setCurrentUser({ uid: doc.id, ...doc.data() });
             setRole(role);
             setTrackId(trackId);
             setLoading(false);

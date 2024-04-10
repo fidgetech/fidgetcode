@@ -14,6 +14,7 @@ import Loading from 'components/Layout/Loading';
 import { StudentDataProvider } from "components/StudentDataContext";
 import StudentHome from "components/StudentHome";
 import Course from "components/Course";
+import Assignment from "components/Assignment";
 
 export default function App() {
   const router = createBrowserRouter([
@@ -60,7 +61,8 @@ export default function App() {
 
 const studentRoutes = [
   { path: '', element: <StudentHome /> },
-  { path: 'courses/:slug', element: <Course /> },
+  { path: 'courses/:courseSlug', element: <Course /> },
+  { path: 'courses/:courseSlug/assignments/:assignmentId', element: <Assignment /> },
 ];
 
 const adminRoutes = [
