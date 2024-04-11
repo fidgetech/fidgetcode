@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { useStudentData } from 'components//StudentDataContext';
+import { useStudentData } from 'components/useStudentData';
 import Markdown from 'react-markdown';
 
 const Assignment = () => {

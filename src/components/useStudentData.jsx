@@ -1,4 +1,3 @@
-import { createContext, useContext } from 'react';
 import { useAuth } from 'components/Auth/AuthContext';
 import { db } from 'src/firebase.js';
 import { useQuery } from '@tanstack/react-query';
@@ -57,37 +56,26 @@ const fetchAssignments = async (currentUser, trackId, courses) => {
   return assignmentsWithTemplates;
 }
 
-const StudentDataContext = createContext();
-
 export const useStudentData = (needs = {}) => {
-  const context = useContext(StudentDataContext);
   const { currentUser, trackId } = useAuth();
 
   const track = needs.needTrack ? useQuery({
     queryKey: ['track', trackId],
-    queryFn: () => context.fetchTrack(trackId),
+    queryFn: () => fetchTrack(trackId),
     enabled: !!trackId
   }).data : null;
 
   const courses = needs.needCourses || needs.needAssignments ? useQuery({
     queryKey: ['courses', trackId],
-    queryFn: () => context.fetchCourses(trackId),
+    queryFn: () => fetchCourses(trackId),
     enabled: !!trackId && !!track
   }).data : null;
 
   const assignments = needs.needAssignments ? useQuery({
     queryKey: ['assignments', currentUser?.uid, trackId],
-    queryFn: () => context.fetchAssignments(currentUser, trackId, courses),
+    queryFn: () => fetchAssignments(currentUser, trackId, courses),
     enabled: !!currentUser && !!trackId && !!courses
   }).data : null;
 
   return { track, courses, assignments };
 };
-
-export const StudentDataProvider = ({ children }) => {
-  return (
-    <StudentDataContext.Provider value={{ fetchTrack, fetchCourses, fetchAssignments }}>
-      {children}
-    </StudentDataContext.Provider>
-  );
-}

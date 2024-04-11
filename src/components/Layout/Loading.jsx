@@ -4,8 +4,10 @@ import MaterialLayout from './MaterialLayout';
 
 export default function Loading({ text='Thinking...', isHeading=false, fullScreen=false }) {
   return fullScreen ?
-    <MaterialLayout staticNavbar={true}><LoadingContent text={text} isHeading={isHeading} /></MaterialLayout>
-    :
+    <MaterialLayout staticNavbar={true}>
+      <LoadingContent text={text} isHeading={isHeading} />
+    </MaterialLayout>
+  :
     <LoadingContent text={text} isHeading={isHeading} />;
 };
 

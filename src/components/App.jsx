@@ -13,7 +13,6 @@ import { NotificationProvider } from 'components/Layout/NotificationContext';
 import { Notification } from 'components/Layout/Notification';
 import { ThemeProviderWrapper } from 'components/Layout/ThemeContext';
 import Loading from 'components/Layout/Loading';
-import { StudentDataProvider } from "components/StudentDataContext";
 import StudentHome from "components/StudentHome";
 import Course from "components/Course";
 import Assignment from "components/Assignment";
@@ -23,7 +22,8 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       suspense: true,
-      staleTime: Infinity,
+      staleTime: 12 * 60 * 60 * 1000, // 12 hours (also goes stale on logout or refresh)
+      keepPreviousData: true,
       refetchOnWindowFocus: false,
     }
   }
@@ -64,12 +64,10 @@ export default function App() {
         <ThemeProviderWrapper>
           <ErrorBoundary>
             <Suspense fallback={<Loading text='Fetching data...' fullScreen={true} />}>
-              <StudentDataProvider>
-                <NotificationProvider>
-                  <Notification />
-                  <RouterProvider router={router} />
-                </NotificationProvider>
-              </StudentDataProvider>
+              <NotificationProvider>
+                <Notification />
+                <RouterProvider router={router} />
+              </NotificationProvider>
             </Suspense>
           </ErrorBoundary>
         </ThemeProviderWrapper>
