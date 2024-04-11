@@ -7,7 +7,13 @@ import ColorModeToggle from 'components/Layout/ColorModeToggle';
 import { useAuth } from 'components/Auth/AuthContext';
 
 export const StaticNavbar = () => {
-  const { currentUser, isSignedIn } = useAuth();
+  const { currentUser, isSignedIn, signOut } = useAuth();
+  const [accountMenuAccountMenuAnchorEl, setAccountMenuAnchorEl] = useState(null);
+  const accountMenuOpen = Boolean(accountMenuAccountMenuAnchorEl);
+  const handleToggleAccountMenu = (event) => {
+    setAccountMenuAnchorEl(prevAnchorEl => prevAnchorEl ? null : event.currentTarget);
+  };
+
   return (
     <AppBar position="static">
       <Toolbar>
@@ -16,9 +22,12 @@ export const StaticNavbar = () => {
           <Box>
             {isSignedIn && (
               <>
-                <Button color="inherit">
+                <Button color="inherit" onClick={handleToggleAccountMenu}>
                   {currentUser.name}
                 </Button>
+                <Menu anchorEl={accountMenuAccountMenuAnchorEl} open={accountMenuOpen} onClose={handleToggleAccountMenu}>
+                  <MenuItem onClick={(e) => { signOut(); handleToggleAccountMenu(e); }}>Sign Out</MenuItem>
+                </Menu>
               </>
             )}
             <ColorModeToggle />

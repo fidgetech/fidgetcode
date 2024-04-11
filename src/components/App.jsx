@@ -4,7 +4,7 @@
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { createBrowserRouter, RouterProvider, Navigate, Outlet } from "react-router-dom";
-import { RoutingErrorPage, PermissionsErrorPage } from "components/Layout/ErrorPages.jsx";
+import { RoutingErrorPage, PermissionsErrorPage, MiscErrorPage } from "components/Layout/ErrorPages.jsx";
 import MaterialLayout from 'components/Layout/MaterialLayout';
 import { AuthProvider, useAuth } from 'components/Auth/AuthContext';
 import Authentication from 'components/Auth/Authentication';
@@ -59,10 +59,10 @@ export default function App() {
   ]);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <ThemeProviderWrapper>
-          <ErrorBoundary>
+    <ThemeProviderWrapper>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <ErrorBoundary FallbackComponent={MiscErrorPage}>
             <Suspense fallback={<Loading text='Fetching data...' fullScreen={true} />}>
               <NotificationProvider>
                 <Notification />
@@ -70,9 +70,9 @@ export default function App() {
               </NotificationProvider>
             </Suspense>
           </ErrorBoundary>
-        </ThemeProviderWrapper>
-      </AuthProvider>
-    </QueryClientProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </ThemeProviderWrapper>
   )
 }
 

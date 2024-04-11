@@ -51,7 +51,7 @@ export const AuthProvider = ({ children }) => {
   const signOut = () => {
     setLoading(false);
     queryClient.invalidateQueries();
-    return auth.signOut();
+    auth.signOut();
   };
 
   const value = {
