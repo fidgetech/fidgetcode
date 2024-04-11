@@ -1,32 +1,11 @@
-import { useEffect, useState } from 'react';
 import { useParams, Link as RouterLink } from 'react-router-dom';
 import { useStudentData } from 'components//StudentDataContext';
-import Loading from 'components/Layout/Loading';
 import { List, ListItem, ListItemText, ListItemButton } from '@mui/material';
 
 const Course = () => {
   const { courseSlug } = useParams();
-  const { courses, assignments, fetchTrackAndCourses, fetchAssignments } = useStudentData();
-  const [course, setCourse] = useState(null);
-  
-  useEffect(() => {
-    if (!courses) fetchTrackAndCourses();
-  }, [courses, fetchTrackAndCourses]);
-
-  useEffect(() => {
-    if (courses && !assignments) fetchAssignments();
-  }, [courses, assignments, fetchAssignments]);
-
-  useEffect(() => {
-    if (courses && courseSlug) {
-      const foundCourse = courses.find(course => course.slug === courseSlug);
-      setCourse(foundCourse);
-    }
-  }, [courses, courseSlug]);
-
-  if (!course || !assignments) {
-    return <Loading text='Loading course...'/>;
-  }
+  const { courses, assignments } = useStudentData({ needCourses: true, needAssignments: true });
+  const course = courses.find(course => course.slug === courseSlug);
 
   return (
     <>

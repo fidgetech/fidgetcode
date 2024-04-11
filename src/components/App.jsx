@@ -1,6 +1,8 @@
 // import reactLogo from './assets/react.svg'
 // import viteLogo from '/vite.svg'
 // import './App.css'
+import { Suspense } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { createBrowserRouter, RouterProvider, Navigate, Outlet } from "react-router-dom";
 import { RoutingErrorPage, PermissionsErrorPage } from "components/Layout/ErrorPages.jsx";
 import MaterialLayout from 'components/Layout/MaterialLayout';
@@ -15,6 +17,17 @@ import { StudentDataProvider } from "components/StudentDataContext";
 import StudentHome from "components/StudentHome";
 import Course from "components/Course";
 import Assignment from "components/Assignment";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      suspense: true,
+      staleTime: Infinity,
+      refetchOnWindowFocus: false,
+    }
+  }
+});
 
 export default function App() {
   const router = createBrowserRouter([
@@ -37,25 +50,31 @@ export default function App() {
           element: <ProtectedRoute allowedRoles={['student']}><Outlet /></ProtectedRoute>,
           children: studentRoutes
         },
-        {
-          path: '/login',
-          element: <Authentication />
-        },
       ]
+    },
+    {
+      path: '/login',
+      element: <LoginLayout />
     }
   ]);
 
   return (
-    <AuthProvider>
-      <StudentDataProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
         <ThemeProviderWrapper>
-          <NotificationProvider>
-            <Notification />
-            <RouterProvider router={router} />
-          </NotificationProvider>
+          <ErrorBoundary>
+            <Suspense fallback={<Loading text='Fetching data...' fullScreen={true} />}>
+              <StudentDataProvider>
+                <NotificationProvider>
+                  <Notification />
+                  <RouterProvider router={router} />
+                </NotificationProvider>
+              </StudentDataProvider>
+            </Suspense>
+          </ErrorBoundary>
         </ThemeProviderWrapper>
-      </StudentDataProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </QueryClientProvider>
   )
 }
 
@@ -70,9 +89,18 @@ const adminRoutes = [
 ];
 
 const MainLayout = () => {
+  const { loading } = useAuth();
   return (
-    <MaterialLayout>
+    <MaterialLayout staticNavbar={loading}>
       <Outlet />
+    </MaterialLayout>
+  );
+};
+
+const LoginLayout = () => {
+  return (
+    <MaterialLayout staticNavbar={true}>
+      <Authentication />
     </MaterialLayout>
   );
 };

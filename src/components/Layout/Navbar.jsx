@@ -6,7 +6,30 @@ import ColorModeToggle from 'components/Layout/ColorModeToggle';
 
 import { useAuth } from 'components/Auth/AuthContext';
 
-const Navbar = () => {
+export const StaticNavbar = () => {
+  const { currentUser, isSignedIn } = useAuth();
+  return (
+    <AppBar position="static">
+      <Toolbar>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+          <Typography variant="h6" sx={{ padding: '6px 16px', borderRadius: '4px' }}>Epicenter 2.0</Typography>
+          <Box>
+            {isSignedIn && (
+              <>
+                <Button color="inherit">
+                  {currentUser.name}
+                </Button>
+              </>
+            )}
+            <ColorModeToggle />
+          </Box>
+        </Box>
+      </Toolbar>
+    </AppBar>
+  );
+};
+
+export const Navbar = () => {
   const { currentUser, isSignedIn, signOut } = useAuth();
   const [accountMenuAccountMenuAnchorEl, setAccountMenuAnchorEl] = useState(null);
   const accountMenuOpen = Boolean(accountMenuAccountMenuAnchorEl);
@@ -86,5 +109,3 @@ const Navbar = () => {
     </AppBar>
   );
 };
-
-export default Navbar;

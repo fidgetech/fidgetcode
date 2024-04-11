@@ -1,21 +1,9 @@
-import { useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { List, ListItem, ListItemText, ListItemButton } from '@mui/material';
 import { useStudentData } from 'components/StudentDataContext';
-import Loading from 'components/Layout/Loading';
 
 const Courses = () => {
-  const { track, courses, fetchTrackAndCourses } = useStudentData();
-
-  useEffect(() => {
-    if (!track || !courses) {
-      fetchTrackAndCourses();
-    }
-  }, [track, courses]);
-
-  if (!track || !courses) {
-    return <Loading text='Loading courses...'/>;
-  }
+  const { track, courses } = useStudentData({ needTrack: true, needCourses: true });
 
   return (
     <>

@@ -2,9 +2,9 @@ import { CssBaseline, Box, Typography, Link } from '@mui/material';
 import { useCustomTheme } from './ThemeContext';
 import { rootStyle } from './LayoutStyles';
 import { StyledPaper } from './SharedStyles';
-import Navbar from './Navbar';
+import { Navbar, StaticNavbar } from './Navbar';
 
-export default function MaterialLayout({ children }) {
+export default function MaterialLayout({ children, staticNavbar=false }) {
   const { theme } = useCustomTheme();
 
   return (
@@ -12,7 +12,7 @@ export default function MaterialLayout({ children }) {
       <CssBaseline />
       <div sx={rootStyle(theme)}>
         <header>
-          <Navbar />
+          {staticNavbar ? <StaticNavbar /> : <Navbar />}
         </header>
         <main>
           <Box sx={{ my: { xs: 0, sm: 2 } }}>
