@@ -1,6 +1,6 @@
 import { Link as RouterLink } from 'react-router-dom';
 import { List, ListItem, ListItemText, ListItemButton } from '@mui/material';
-import { useStudentData } from 'components/useStudentData';
+import { useStudentData } from 'hooks/useStudentData';
 
 const Courses = () => {
   const { track, courses } = useStudentData({ needTrack: true, needCourses: true });

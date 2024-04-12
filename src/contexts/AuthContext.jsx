@@ -1,8 +1,8 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
-import { auth, db } from 'src/firebase.js';
-import { useQueryClient } from '@tanstack/react-query';
+import { auth, db } from 'services/firebase.js';
+import { queryClient } from 'lib/queryClient';
 
 const validRoles = ['student', 'admin'];
 
@@ -15,7 +15,6 @@ export const AuthProvider = ({ children }) => {
   const [role, setRole] = useState(null);
   const [trackId, setTrackId] = useState(null);
   const [loading, setLoading] = useState(true);
-  const queryClient = useQueryClient();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -50,7 +49,7 @@ export const AuthProvider = ({ children }) => {
 
   const signOut = () => {
     setLoading(false);
-    queryClient.invalidateQueries();
+    queryClient.clear();
     auth.signOut();
   };
 

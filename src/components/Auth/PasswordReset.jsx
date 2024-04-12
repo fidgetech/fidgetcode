@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { auth } from 'src/firebase.js';
+import { auth } from 'services/firebase.js';
 import { Alert, Button, Grid, Box, TextField } from '@mui/material';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import Loading from 'components/Layout/Loading';
-import { useNotification } from 'components/Layout/NotificationContext';
+import { useNotification } from 'contexts/NotificationContext';
 
 export default function PasswordReset({ toggleReset }) {
   const [error, setError] = useState(null);

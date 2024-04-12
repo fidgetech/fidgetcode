@@ -1,5 +1,5 @@
 import { useParams, Link as RouterLink } from 'react-router-dom';
-import { useStudentData } from 'components/useStudentData';
+import { useStudentData } from 'hooks/useStudentData';
 import { List, ListItem, ListItemText, ListItemButton } from '@mui/material';
 
 const Course = () => {

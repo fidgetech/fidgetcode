@@ -1,6 +1,6 @@
 import { createContext, useState, useContext, useEffect } from 'react';
 import { ThemeProvider, useMediaQuery } from '@mui/material';
-import { lightTheme, darkTheme } from './LayoutStyles';
+import { lightTheme, darkTheme } from 'themes/LayoutStyles';
 
 const ThemeContext = createContext();
 

@@ -1,5 +1,5 @@
-import { useAuth } from 'components/Auth/AuthContext';
-import { db } from 'src/firebase.js';
+import { useAuth } from 'contexts/AuthContext';
+import { db } from 'services/firebase.js';
 import { useQuery } from '@tanstack/react-query';
 import { documentId, collection, doc, getDoc, getDocs, query, orderBy, where } from 'firebase/firestore';
 

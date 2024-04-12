@@ -1,6 +1,6 @@
 import { CssBaseline, Box, Typography, Link } from '@mui/material';
-import { useCustomTheme } from './ThemeContext';
-import { rootStyle } from './LayoutStyles';
+import { useCustomTheme } from 'contexts/ThemeContext';
+import { rootStyle } from 'themes/LayoutStyles';
 import { StyledPaper } from './SharedStyles';
 import { Navbar, StaticNavbar } from './Navbar';
 

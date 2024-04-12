@@ -3,8 +3,7 @@ import { Box, IconButton, AppBar, Toolbar, Typography, Button, Menu, MenuItem } 
 import MenuIcon from '@mui/icons-material/Menu';
 import { Link, useLocation } from 'react-router-dom';
 import ColorModeToggle from 'components/Layout/ColorModeToggle';
-
-import { useAuth } from 'components/Auth/AuthContext';
+import { useAuth } from 'contexts/AuthContext';
 
 export const StaticNavbar = () => {
   const { currentUser, isSignedIn, signOut } = useAuth();

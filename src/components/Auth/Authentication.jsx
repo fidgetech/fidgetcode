@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAuth } from './AuthContext';
+import { useAuth } from 'contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 import SignIn from './SignIn';
 import PasswordReset from './PasswordReset';

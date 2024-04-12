@@ -33,13 +33,11 @@ export const PermissionsErrorPage = () => {
 export const MiscErrorPage = ({ error }) => {
   console.error(error);
   return (
-    <MaterialLayout staticNavbar={true}>
-      <div id="error-page">
-        <h1>Uh oh!</h1>
-        <p>
-          <i>{error.message}</i>
-        </p>
-      </div>
-    </MaterialLayout>
+    <div id="error-page">
+      <h1>Uh oh!</h1>
+      <p>
+        <i>{error.message}</i>
+      </p>
+    </div>
   );
 }

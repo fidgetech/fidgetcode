@@ -6,28 +6,18 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { createBrowserRouter, RouterProvider, Navigate, Outlet } from "react-router-dom";
 import { RoutingErrorPage, PermissionsErrorPage, MiscErrorPage } from "components/Layout/ErrorPages.jsx";
 import MaterialLayout from 'components/Layout/MaterialLayout';
-import { AuthProvider, useAuth } from 'components/Auth/AuthContext';
+import { AuthProvider, useAuth } from 'contexts/AuthContext';
 import Authentication from 'components/Auth/Authentication';
 import { Typography } from '@mui/material';
-import { NotificationProvider } from 'components/Layout/NotificationContext';
-import { Notification } from 'components/Layout/Notification';
-import { ThemeProviderWrapper } from 'components/Layout/ThemeContext';
+import { ThemeProviderWrapper } from 'contexts/ThemeContext';
 import Loading from 'components/Layout/Loading';
 import StudentHome from "components/StudentHome";
 import Course from "components/Course";
 import Assignment from "components/Assignment";
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      suspense: true,
-      staleTime: 12 * 60 * 60 * 1000, // 12 hours (also goes stale on logout or refresh)
-      keepPreviousData: true,
-      refetchOnWindowFocus: false,
-    }
-  }
-});
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from 'lib/queryClient';
+import { NotificationProvider } from 'contexts/NotificationContext';
+import { Notification } from 'components/Layout/Notification';
 
 export default function App() {
   const router = createBrowserRouter([
@@ -60,18 +50,13 @@ export default function App() {
 
   return (
     <ThemeProviderWrapper>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <ErrorBoundary FallbackComponent={MiscErrorPage}>
-            <Suspense fallback={<Loading text='Fetching data...' fullScreen={true} />}>
-              <NotificationProvider>
-                <Notification />
-                <RouterProvider router={router} />
-              </NotificationProvider>
-            </Suspense>
-          </ErrorBoundary>
-        </AuthProvider>
-      </QueryClientProvider>
+      <NotificationProvider>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <RouterProvider router={router} />
+          </AuthProvider>
+        </QueryClientProvider>
+      </NotificationProvider>
     </ThemeProviderWrapper>
   )
 }
@@ -88,16 +73,23 @@ const adminRoutes = [
 
 const MainLayout = () => {
   const { loading } = useAuth();
+
   return (
     <MaterialLayout staticNavbar={loading}>
-      <Outlet />
+      <Notification />
+      <ErrorBoundary FallbackComponent={MiscErrorPage}>
+        <Suspense fallback={<Loading text='Fetching data...' />}>
+          <Outlet />
+        </Suspense>
+      </ErrorBoundary>
     </MaterialLayout>
   );
 };
 
 const LoginLayout = () => {
   return (
-    <MaterialLayout staticNavbar={true}>
+    <MaterialLayout>
+      <Notification />
       <Authentication />
     </MaterialLayout>
   );

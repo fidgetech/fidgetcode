@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { auth } from 'src/firebase.js';
-import { useAuth } from 'components/Auth/AuthContext';
+import { auth } from 'services/firebase.js';
+import { useAuth } from 'contexts/AuthContext';
 import { Alert, Button, Grid, Box, TextField } from '@mui/material';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import Loading from 'components/Layout/Loading';
