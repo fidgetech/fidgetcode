@@ -6,19 +6,22 @@ const Course = () => {
   const { courseSlug } = useParams();
   const { courses, assignments } = useStudentData({ needCourses: true, needAssignments: true });
   const course = courses.find(course => course.slug === courseSlug);
-
+  const currentCourseAssignments = assignments[course.id];
   return (
     <>
       <h2>{course.title}</h2>
-      <List>
-        {assignments.filter(assignment => assignment.courseId === course.id).map(assignment => (
-          <ListItem key={assignment.id} disablePadding>
-            <ListItemButton component={RouterLink} to={`/student/courses/${course.slug}/assignments/${assignment.id}`}>
-              <ListItemText primary={assignment.template.title} secondary={assignment.status} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
+
+      {currentCourseAssignments &&
+        <List>
+          {assignments[course.id].map(assignment => (
+            <ListItem key={assignment.id} disablePadding>
+              <ListItemButton component={RouterLink} to={`/student/courses/${course.slug}/assignments/${assignment.id}`}>
+                <ListItemText primary={assignment.template.title} secondary={assignment.status} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      }
     </>
   );
 }
