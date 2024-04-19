@@ -1,4 +1,5 @@
-import { useRouteError, Link as RouterLink } from "react-router-dom";
+import { useEffect } from "react";
+import { useRouteError, useLocation, Link as RouterLink } from "react-router-dom";
 import { Typography, Link } from "@mui/material";
 import MaterialLayout from "components/Layout/MaterialLayout";
 
@@ -30,7 +31,13 @@ export const PermissionsErrorPage = () => {
   );
 }
 
-export const MiscErrorPage = ({ error }) => {
+export const MiscErrorPage = ({ error, resetErrorBoundary }) => {
+  const location = useLocation();
+
+  useEffect(() => {
+    resetErrorBoundary();
+  }, [location, resetErrorBoundary]);
+
   console.error(error);
   return (
     <div id="error-page">

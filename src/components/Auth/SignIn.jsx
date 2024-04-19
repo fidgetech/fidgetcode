@@ -29,7 +29,7 @@ export default function SignIn({ toggleReset }) {
   }
 
   return (
-    <Box component="form" onSubmit={handleSignIn} noValidate sx={{ mt: 1 }}>
+    <Box component="form" onSubmit={handleSignIn} sx={{ mt: 1 }}>
       {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
       <TextField
         margin="normal"

@@ -1,14 +1,8 @@
-import { useParams } from 'react-router-dom';
-import { useStudentData } from 'hooks/useStudentData';
 import Markdown from 'react-markdown';
 import { List, ListItem, ListItemText, Typography, Divider } from '@mui/material';
 
-const Assignment = () => {
-  const { courseSlug, assignmentId } = useParams();
-  const { courses, assignments } = useStudentData({ needAssignments: true });
-  const course = courses.find(course => course.slug === courseSlug);
-  const assignment = assignments[course.id].find(assignment => assignment.id === assignmentId);
-  const { title, content, objectives } = assignment.template;
+export const AssignmentContent = ({ assignment }) => {
+  const { title, content, objectives } = assignment;
   const sortedObjectives = objectives.sort((a, b) => a.number - b.number);
 
   return (
@@ -27,9 +21,6 @@ const Assignment = () => {
           </ListItem>
         ))}
       </List>
-
     </>
   );
 }
-
-export default Assignment;

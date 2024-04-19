@@ -13,7 +13,7 @@ import { ThemeProviderWrapper } from 'contexts/ThemeContext';
 import Loading from 'components/Layout/Loading';
 import StudentHome from "components/StudentHome";
 import Course from "components/Course";
-import Assignment from "components/Assignment";
+import { Assignment } from "components/Assignment/Assignment";
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from 'lib/queryClient';
 import { NotificationProvider } from 'contexts/NotificationContext';

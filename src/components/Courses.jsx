@@ -1,9 +1,12 @@
 import { Link as RouterLink } from 'react-router-dom';
 import { List, ListItem, ListItemText, ListItemButton } from '@mui/material';
-import { useStudentData } from 'hooks/useStudentData';
+import { useTrack, useCourses } from 'hooks/useStudentData';
+import { useAuth } from 'contexts/AuthContext';
 
 const Courses = () => {
-  const { track, courses } = useStudentData({ needTrack: true, needCourses: true });
+  const { trackId } = useAuth();
+  const { track } = useTrack({ trackId });
+  const { courses } = useCourses({ trackId });
 
   return (
     <>

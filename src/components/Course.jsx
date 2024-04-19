@@ -1,22 +1,24 @@
 import { useParams, Link as RouterLink } from 'react-router-dom';
-import { useStudentData } from 'hooks/useStudentData';
+import { useAuth } from 'contexts/AuthContext';
+import { useCourse, useStudentCourseAssignments } from 'hooks/useStudentData';
 import { List, ListItem, ListItemText, ListItemButton } from '@mui/material';
 
 const Course = () => {
+  const { currentUser, trackId } = useAuth();
   const { courseSlug } = useParams();
-  const { courses, assignments } = useStudentData({ needCourses: true, needAssignments: true });
-  const course = courses.find(course => course.slug === courseSlug);
-  const currentCourseAssignments = assignments[course.id];
+  const { course } = useCourse({ trackId, courseSlug });
+  const { assignments } = useStudentCourseAssignments({ studentId: currentUser.uid, courseId: course.id });
+
   return (
     <>
       <h2>{course.title}</h2>
 
-      {currentCourseAssignments &&
+      {assignments &&
         <List>
-          {assignments[course.id].map(assignment => (
+          {assignments.map(assignment => (
             <ListItem key={assignment.id} disablePadding>
               <ListItemButton component={RouterLink} to={`/student/courses/${course.slug}/assignments/${assignment.id}`}>
-                <ListItemText primary={assignment.template.title} secondary={assignment.status} />
+                <ListItemText primary={assignment.title} secondary={assignment.status} />
               </ListItemButton>
             </ListItem>
           ))}
