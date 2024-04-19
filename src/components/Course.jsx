@@ -9,7 +9,8 @@ const statusMapping = {
 };
 
 const Course = () => {
-  const { currentUser, trackId } = useAuth();
+  const { currentUser } = useAuth();
+  const { trackId } = currentUser;
   const { courseSlug } = useParams();
   const { course } = useCourse({ trackId, courseSlug });
   const { assignments } = useStudentCourseAssignments({ studentId: currentUser.uid, courseId: course.id });

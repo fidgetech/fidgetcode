@@ -4,7 +4,7 @@ import { collection, doc, getDoc, getDocs, query, orderBy, where } from 'firebas
 
 const fetchTrack = async (trackId) => {
   if (!trackId) throw new Error('Track ID is required to fetch track');
-  console.log('fetching track...');
+  console.log(`fetching track ${trackId}`);
   const trackRef = doc(db, 'tracks', trackId);
   const trackSnapshot = await getDoc(trackRef);
   if (!trackSnapshot.exists()) throw new Error('Track not found');
@@ -13,7 +13,7 @@ const fetchTrack = async (trackId) => {
 
 const fetchCourses = async (trackId) => {
   if (!trackId) throw new Error('Track ID is required to fetch courses');
-  console.log('fetching courses...');
+  console.log(`fetching courses for track ${trackId}`);
   const coursesRef = collection(db, 'tracks', trackId, 'courses');
   const coursesQuery = query(coursesRef, orderBy('number'));
   const coursesSnapshot = await getDocs(coursesQuery);
@@ -23,7 +23,7 @@ const fetchCourses = async (trackId) => {
 
 const fetchCourse = async (trackId, courseId) => {
   if (!trackId || !courseId) throw new Error('Missing parameters to fetch course');
-  console.log('fetching course...');
+  console.log(`fetching course ${courseId}`);
   const courseRef = doc(db, 'tracks', trackId, 'courses', courseId);
   const courseSnapshot = await getDoc(courseRef);
   if (!courseSnapshot.exists()) throw new Error('Course not found');
@@ -32,7 +32,7 @@ const fetchCourse = async (trackId, courseId) => {
 
 const fetchStudentCourseAssignments = async (studentId, courseId) => {
   if (!studentId || !courseId) throw new Error('Missing parameters to fetch student course assignments');
-  console.log('fetching student course assignments...');
+  console.log(`fetching assignments for student ${studentId}, course ${courseId}`);
   const studentRef = doc(db, 'students', studentId);
   const assignmentsRef = collection(studentRef, 'assignments');
   const assignmentsQuery = query(assignmentsRef, where('courseId', '==', courseId));
@@ -46,7 +46,7 @@ const fetchStudentCourseAssignments = async (studentId, courseId) => {
 
 const fetchAssignment = async (studentId, assignmentId) => {
   if (!studentId || !assignmentId) throw new Error('Missing parameters to fetch assignment');
-  console.log('fetching assignment...');
+  console.log(`fetching assignment ${assignmentId}`);
   const assignmentRef = doc(db, 'students', studentId, 'assignments', assignmentId);
   const assignmentSnapshot = await getDoc(assignmentRef);
   if (!assignmentSnapshot.exists()) throw new Error('Assignment not found');

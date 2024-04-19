@@ -4,7 +4,7 @@ import { useTrack, useCourses } from 'hooks/useStudentData';
 import { useAuth } from 'contexts/AuthContext';
 
 const Courses = () => {
-  const { trackId } = useAuth();
+  const { currentUser: { trackId } } = useAuth();
   const { track } = useTrack({ trackId });
   const { courses } = useCourses({ trackId });
 

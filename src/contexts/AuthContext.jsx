@@ -13,34 +13,28 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [role, setRole] = useState(null);
-  const [trackId, setTrackId] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-
       setLoading(true);
       if (firebaseUser) {
         firebaseUser.getIdTokenResult().then((idTokenResult) => {
           const role = idTokenResult.claims.role;
-          const trackId = idTokenResult.claims.trackId;
           if (!validRoles.includes(role)) return signOut();
           const userRef = doc(db, `${role}s`, firebaseUser.uid);
           getDoc(userRef).then((doc) => {
             if (!doc.exists()) return signOut();
             setCurrentUser({ uid: doc.id, ...doc.data() });
             setRole(role);
-            setTrackId(trackId);
             setLoading(false);
-            console.log('User auth data loaded');
-            console.log('Logged in as', role, 'with trackId', trackId);
+            console.log('Logged in as', role);
           });
         });
       } else {
         console.log('No user signed in.')
         setCurrentUser(null);
         setRole(null);
-        setTrackId(null);
         setLoading(false);
       }
     });
@@ -61,7 +55,6 @@ export const AuthProvider = ({ children }) => {
     loading,
     setLoading,
     signOut,
-    trackId,
   };
 
   return (
