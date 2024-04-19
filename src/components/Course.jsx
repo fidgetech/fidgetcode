@@ -3,6 +3,11 @@ import { useAuth } from 'contexts/AuthContext';
 import { useCourse, useStudentCourseAssignments } from 'hooks/useStudentData';
 import { List, ListItem, ListItemText, ListItemButton } from '@mui/material';
 
+const statusMapping = {
+  assigned: 'Not yet submitted',
+  submitted: 'Submitted',
+};
+
 const Course = () => {
   const { currentUser, trackId } = useAuth();
   const { courseSlug } = useParams();
@@ -18,7 +23,7 @@ const Course = () => {
           {assignments.map(assignment => (
             <ListItem key={assignment.id} disablePadding>
               <ListItemButton component={RouterLink} to={`/student/courses/${course.slug}/assignments/${assignment.id}`}>
-                <ListItemText primary={assignment.title} secondary={assignment.status} />
+                <ListItemText primary={assignment.title} secondary={statusMapping[assignment.status]} />
               </ListItemButton>
             </ListItem>
           ))}

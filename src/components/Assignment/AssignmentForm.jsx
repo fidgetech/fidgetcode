@@ -37,6 +37,14 @@ export const AssignmentForm = ({ assignment }) => {
     return <Loading text='Please wait...' />;
   }
 
+  if (assignment.status === 'submitted') {
+    return (
+      <Alert severity="success" sx={{ mt: 2 }}>
+        Your project has been submitted and is awaiting review.
+      </Alert>
+    );
+  }
+
   return (
     <>
       <Typography variant='h5'>Submit your project below</Typography>
