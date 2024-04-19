@@ -1,86 +1,107 @@
-import { useAuth } from 'contexts/AuthContext';
 import { db } from 'services/firebase.js';
 import { useQuery } from '@tanstack/react-query';
-import { documentId, collection, doc, getDoc, getDocs, query, orderBy } from 'firebase/firestore';
-import { fetchDocumentsInChunks } from 'utils/helpers';
+import { collection, doc, getDoc, getDocs, query, orderBy, where } from 'firebase/firestore';
 
 const fetchTrack = async (trackId) => {
+  if (!trackId) throw new Error('Track ID is required to fetch track');
   console.log('fetching track...');
   const trackRef = doc(db, 'tracks', trackId);
   const trackSnapshot = await getDoc(trackRef);
   if (!trackSnapshot.exists()) throw new Error('Track not found');
-  console.log('done fetching track');
   return { id: trackSnapshot.id, ...trackSnapshot.data() };
 }
 
 const fetchCourses = async (trackId) => {
-  console.log('fetching courses...');
   if (!trackId) throw new Error('Track ID is required to fetch courses');
+  console.log('fetching courses...');
   const coursesRef = collection(db, 'tracks', trackId, 'courses');
   const coursesQuery = query(coursesRef, orderBy('number'));
   const coursesSnapshot = await getDocs(coursesQuery);
   if (coursesSnapshot.empty) throw new Error('No courses found for the given track');
-  console.log('done fetching courses');
   return coursesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 }
 
-const fetchAssignments = async (currentUser, trackId, courses) => {
-  if (!currentUser || !trackId || !courses.length) throw new Error('Missing parameters to fetch assignments');
-
-  console.log('fetching assignments...');
-  // get all assignments for the student
-  const studentRef = doc(db, 'students', currentUser.uid);
-  const assignmentsRef = collection(studentRef, 'assignments');
-  const assignmentsQuery = query(assignmentsRef, orderBy('courseId'));
-  const assignmentsSnapshot = await getDocs(assignmentsQuery);
-  const assignmentsData = assignmentsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-  const assignmentIds = assignmentsData.map(assignment => assignment.id);
-
-  let assignmentsByCourse = assignmentsData.reduce((acc, assignment) => {
-    acc[assignment.courseId] = acc[assignment.courseId] || [];
-    acc[assignment.courseId].push({ ...assignment, template: null });
-    return acc;
-  }, {});
-
-  console.log('fetching assignment templates...');
-  // get assignment templates for each course
-  for (const course of courses) {
-    if (!assignmentsByCourse[course.id]) continue;
-    const courseRef = doc(db, 'tracks', trackId, 'courses', course.id);
-    const assignmentTemplatesRef = collection(courseRef, 'assignmentTemplates');
-    const assignmentTemplatesQuery = query(assignmentTemplatesRef, orderBy('number'));
-    const templatesData = await fetchDocumentsInChunks(assignmentTemplatesQuery, documentId(), assignmentIds);
-    for (const template of templatesData) {
-      const assignment = assignmentsByCourse[course.id].find(a => a.id === template.id);
-      if (assignment) assignment.template = template;
-    }
-    assignmentsByCourse[course.id].sort((a, b) => a.template.number - b.template.number);
-  }
-
-  console.log('done fetching assignments and assignment templates');
-  return assignmentsByCourse;
+const fetchCourse = async (trackId, courseId) => {
+  if (!trackId || !courseId) throw new Error('Missing parameters to fetch course');
+  console.log('fetching course...');
+  const courseRef = doc(db, 'tracks', trackId, 'courses', courseId);
+  const courseSnapshot = await getDoc(courseRef);
+  if (!courseSnapshot.exists()) throw new Error('Course not found');
+  return { id: courseSnapshot.id, ...courseSnapshot.data() };
 }
 
-export const useStudentData = (needs = {}) => {
-  const { currentUser, trackId } = useAuth();
+const fetchStudentCourseAssignments = async (studentId, courseId) => {
+  if (!studentId || !courseId) throw new Error('Missing parameters to fetch student course assignments');
+  console.log('fetching student course assignments...');
+  const studentRef = doc(db, 'students', studentId);
+  const assignmentsRef = collection(studentRef, 'assignments');
+  const assignmentsQuery = query(assignmentsRef, where('courseId', '==', courseId));
+  const assignmentsSnapshot = await getDocs(assignmentsQuery);
+  if (assignmentsSnapshot.empty) {
+    console.log('no assignments found for the student for this course');
+    return [];
+  }
+  return assignmentsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+}
 
-  const track = needs.needTrack ? useQuery({
+const fetchAssignment = async (studentId, assignmentId) => {
+  if (!studentId || !assignmentId) throw new Error('Missing parameters to fetch assignment');
+  console.log('fetching assignment...');
+  const assignmentRef = doc(db, 'students', studentId, 'assignments', assignmentId);
+  const assignmentSnapshot = await getDoc(assignmentRef);
+  if (!assignmentSnapshot.exists()) throw new Error('Assignment not found');
+  return { id: assignmentSnapshot.id, ...assignmentSnapshot.data() };
+}
+
+export const useTrack = ({ trackId }) => {
+  const { data: track } = useQuery({
     queryKey: ['track', trackId],
     queryFn: () => fetchTrack(trackId),
     enabled: !!trackId
-  }).data : null;
+  });
+  return { track };
+}
 
-  const courses = needs.needCourses || needs.needAssignments ? useQuery({
+export const useCourses = ({ trackId }) => {
+  const { data: courses } = useQuery({
     queryKey: ['courses', trackId],
     queryFn: () => fetchCourses(trackId),
-    enabled: !!trackId && !!track
-  }).data : null;
+    enabled: !!trackId
+  });
+  return { courses };
+}
 
-  const assignments = needs.needAssignments ? useQuery({
-    queryKey: ['assignments', currentUser?.uid, trackId],
-    queryFn: () => fetchAssignments(currentUser, trackId, courses),
-    enabled: !!currentUser && !!trackId && !!courses
-  }).data : null;
+export const useCourse = ({ trackId, courseId, courseSlug }) => {
+  // find course by either id or slug
+  let course;
+  if (courseId) {
+    const { data: courseData } = useQuery({
+      queryKey: ['course', trackId, courseId],
+      queryFn: () => fetchCourse(trackId, courseId),
+      enabled: !!trackId && !!courseId
+    });
+    course = courseData;
+  } else if (courseSlug) {
+    const { courses } = useCourses({ trackId });
+    course = courses.find(course => course.slug === courseSlug);
+  }
+  return { course };
+}
 
-  return { track, courses, assignments };
-};
+export const useStudentCourseAssignments = ({ studentId, courseId }) => {
+  const { data: assignments } = useQuery({
+    queryKey: ['studentCourseAssignments', studentId, courseId],
+    queryFn: () => fetchStudentCourseAssignments(studentId, courseId),
+    enabled: !!studentId && !!courseId
+  });
+  return { assignments };
+}
+
+export const useAssignment = ({ studentId, assignmentId }) => {
+  const { data: assignment } = useQuery({
+    queryKey: ['assignment', studentId, assignmentId],
+    queryFn: () => fetchAssignment(studentId, assignmentId),
+    enabled: !!studentId && !!assignmentId
+  });
+  return { assignment };
+}
