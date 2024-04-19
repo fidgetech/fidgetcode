@@ -1,0 +1,56 @@
+// NOTE: admins get full access to everything except other admin accounts
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{collection}/{document} {
+    	// allow admins full access to everything except other admin accounts
+      allow read, write: if request.auth.token.role == 'admin' && collection != 'admins';
+    }
+
+    match /admins/{userId} {
+    	// allow admins to read & update only their own admin account
+      allow read, update: if request.auth.uid == userId;
+      allow create, delete: if false;
+    }
+
+    match /students/{userId} {
+    	// allow students to read only their account, no write
+      allow read: if request.auth.uid == userId;
+      allow write: if false;
+
+      match /assignments/{assignmentId} {
+        // allow students to read their own assignments, no write
+        allow read: if request.auth.uid == userId;
+        allow write: if false;
+
+        match /submissions/{submissionId} {
+          // allow students to read their own submissions, no write
+          allow read: if request.auth.uid == resource.data.studentId;
+          allow create: if request.auth.uid == request.resource.data.studentId;
+          // I'll need more specifics for create tho, requiring fields and disallowing unwanted fields
+        }
+      }
+    }
+
+    match /tracks/{trackId} {
+    	// allow students to read their track, no write
+      allow read: if request.auth.token.trackId == trackId;
+      allow write: if false;
+
+      match /courses/{courseId} {
+      	// allow students to read their courses, no write
+        allow read: if request.auth.token.trackId == trackId;
+        allow write: if false;
+
+        match /assignmentTemplates/{assignmentTemplateId} {
+        	// allow student to read template for assignments they were assigned, no write
+          // relies on assignment IDs matching assignment template ID
+          // allow read: if exists(/databases/$(database)/documents/students/$(request.auth.uid)/assignments/$(assignmentTemplateId));
+          allow read: if false;
+          allow write: if false;
+        }
+      }
+    }
+  }
+}
