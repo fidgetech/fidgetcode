@@ -8,6 +8,8 @@ export default defineConfig({
     alias: {
       src: "/src",
       components: "/src/components",
+      student: "/src/components/student",
+      teacher: "/src/components/teacher",
       hooks: "/src/hooks",
       contexts: "/src/contexts",
       lib: "/src/lib",
