@@ -28,12 +28,12 @@ export default function App() {
       children: [
         {
           index: true,
-          element: <ProtectedRoute allowedRoles={['admin', 'student']}><Home /></ProtectedRoute>
+          element: <ProtectedRoute allowedRoles={['teacher', 'student']}><Home /></ProtectedRoute>
         },
         {
-          path: 'admin/*',
-          element: <ProtectedRoute allowedRoles={['admin']}><Outlet /></ProtectedRoute>,
-          children: adminRoutes
+          path: 'teacher/*',
+          element: <ProtectedRoute allowedRoles={['teacher']}><Outlet /></ProtectedRoute>,
+          children: teacherRoutes
         },
         {
           path: 'student/*',
@@ -67,8 +67,8 @@ const studentRoutes = [
   { path: 'courses/:courseSlug/assignments/:assignmentId', element: <Assignment /> },
 ];
 
-const adminRoutes = [
-  { path: '', element: <Typography>Admin routes coming soon...</Typography> },
+const teacherRoutes = [
+  { path: '', element: <Typography>Teacher routes coming soon...</Typography> },
 ];
 
 const MainLayout = () => {
@@ -96,8 +96,8 @@ const LoginLayout = () => {
 };
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
-  const { loading, isSignedIn, isAdmin, isStudent } = useAuth();
-  const userRole = isAdmin ? 'admin' : isStudent ? 'student' : null;
+  const { loading, isSignedIn, isTeacher, isStudent } = useAuth();
+  const userRole = isTeacher ? 'teacher' : isStudent ? 'student' : null;
 
   if (loading) {
     return <Loading text="Checking user permissions..." />;
@@ -115,6 +115,6 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 };
 
 const Home = () => {
-  const { isAdmin } = useAuth();
-  return <Navigate to={isAdmin ? '/admin' : '/student'} />;
+  const { isTeacher } = useAuth();
+  return <Navigate to={isTeacher ? '/teacher' : '/student'} />;
 };

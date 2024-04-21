@@ -4,7 +4,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from 'services/firebase.js';
 import { queryClient } from 'lib/queryClient';
 
-const validRoles = ['student', 'admin'];
+const validRoles = ['student', 'teacher'];
 
 const AuthContext = createContext();
 
@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }) => {
   const value = {
     currentUser,
     isSignedIn: !!currentUser,
-    isAdmin: role === 'admin',
+    isTeacher: role === 'teacher',
     isStudent: role === 'student',
     loading,
     setLoading,
