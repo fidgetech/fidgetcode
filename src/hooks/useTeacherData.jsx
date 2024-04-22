@@ -1,0 +1,77 @@
+import { db } from 'services/firebase.js';
+import { useQuery } from '@tanstack/react-query';
+import { doc, collection, getDoc, getDocs, query, orderBy, where } from 'firebase/firestore';
+
+const fetchTracks = async () => {
+  console.log(`fetching all tracks`);
+  const tracksRef = collection(db, 'tracks');
+  const tracksQuery = query(tracksRef, orderBy('createdAt'));
+  const tracksSnapshot = await getDocs(tracksQuery);
+  if (tracksSnapshot.empty) throw new Error('No tracks found');
+  return tracksSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+}
+
+const fetchTrackStudents = async (trackId) => {
+  if (!trackId) throw new Error('Track ID is required to fetch track students');
+  console.log(`fetching students for track ${trackId}`);
+  const studentsRef = collection(db, 'students');
+  const studentsQuery = query(studentsRef, where('trackId', '==', trackId), orderBy('name'));
+  const studentsSnapshot = await getDocs(studentsQuery);
+  if (studentsSnapshot.empty) throw new Error('No students found for the given track');
+  return studentsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+}
+
+const fetchStudent = async (studentId) => {
+  if (!studentId) throw new Error('Student ID is required to fetch student');
+  console.log(`fetching student ${studentId}`);
+  const studentRef = doc(db, 'students', studentId);
+  const studentDoc = await getDoc(studentRef);
+  if (!studentDoc.exists) throw new Error('Student not found');
+  return { id: studentDoc.id, ...studentDoc.data() };
+}
+
+const fetchCourseAssignmentTemplates = async (trackId, courseId) => {
+  if (!courseId || !trackId) throw new Error('Track and Course ID are required to fetch course assignment templates');
+  console.log(`fetching assignment templates for course ${courseId}`);
+  const courseRef = doc(db, 'tracks', trackId, 'courses', courseId);
+  const assignmentTemplatesRef = collection(courseRef, 'assignmentTemplates');
+  const assignmentTemplatesQuery = query(assignmentTemplatesRef, orderBy('number'));
+  const assignmentTemplatesSnapshot = await getDocs(assignmentTemplatesQuery);
+  return assignmentTemplatesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+}
+
+export const useTracks = () => {
+  const { data: tracks } = useQuery({
+    queryKey: ['tracks'],
+    queryFn: () => fetchTracks(),
+    enabled: true
+  });
+  return { tracks };
+}
+
+export const useTrackStudents = ({ trackId }) => {
+  const { data: students } = useQuery({
+    queryKey: ['trackStudents', trackId],
+    queryFn: () => fetchTrackStudents(trackId),
+    enabled: !!trackId
+  });
+  return { students };
+}
+
+export const useStudent = ({ studentId }) => {
+  const { data: student } = useQuery({
+    queryKey: ['student', studentId],
+    queryFn: () => fetchStudent(studentId),
+    enabled: !!studentId
+  });
+  return { student };
+}
+
+export const useCourseAssignmentTemplates = ({ trackId, courseId }) => {
+  const { data: assignmentTemplates } = useQuery({
+    queryKey: ['courseAssignmentTemplates', trackId, courseId],
+    queryFn: () => fetchCourseAssignmentTemplates(trackId, courseId),
+    enabled: !!courseId && !!trackId
+  });
+  return { assignmentTemplates };
+}

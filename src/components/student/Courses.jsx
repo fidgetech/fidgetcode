@@ -1,27 +1,18 @@
-import { Link as RouterLink } from 'react-router-dom';
-import { List, ListItem, ListItemText, ListItemButton } from '@mui/material';
-import { useTrack, useCourses } from 'hooks/useStudentData';
-import { useAuth } from 'contexts/AuthContext';
+// student courses list
 
-const Courses = () => {
+import { useAuth } from 'contexts/AuthContext';
+import { useTrack } from 'hooks/useStudentData';
+import { CoursesList } from 'shared/CoursesList';
+import { Typography } from '@mui/material';
+
+export const Courses = () => {
   const { currentUser: { trackId } } = useAuth();
   const { track } = useTrack({ trackId });
-  const { courses } = useCourses({ trackId });
 
   return (
     <>
-      <h2>{track.title}</h2>
-      <List>
-        {courses.map((course) => (
-          <ListItem key={course.id} disablePadding>
-            <ListItemButton component={RouterLink} to={`/student/courses/${course.slug}`}>
-              <ListItemText primary={course.title} secondary={course.trackId} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
+      <Typography variant='h4'>{track.title}</Typography>
+      <CoursesList trackId={trackId} />
     </>
   );
 };
-
-export default Courses;

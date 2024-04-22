@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { useRouteError, useLocation, Link as RouterLink } from "react-router-dom";
+import { useRouteError, Link as RouterLink } from "react-router-dom";
 import { Typography, Link } from "@mui/material";
 import MaterialLayout from "components/Layout/MaterialLayout";
 
@@ -31,20 +30,17 @@ export const PermissionsErrorPage = () => {
   );
 }
 
-export const MiscErrorPage = ({ error, resetErrorBoundary }) => {
-  const location = useLocation();
-
-  useEffect(() => {
-    resetErrorBoundary();
-  }, [location, resetErrorBoundary]);
-
-  console.error(error);
+export const MiscErrorPage = ({ error }) => {
   return (
     <div id="error-page">
       <h1>Uh oh!</h1>
       <p>
-        <i>{error.message}</i>
+        {error.name}<br />
+        <em>{error.message}</em>
       </p>
+      {process.env.NODE_ENV === "development" &&
+        <pre style={{ whiteSpace: 'pre-wrap' }}><strong>Stack Trace:</strong> {error.stack}</pre>
+      }
     </div>
   );
 }

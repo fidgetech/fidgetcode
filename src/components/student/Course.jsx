@@ -8,7 +8,7 @@ const statusMapping = {
   submitted: 'Submitted',
 };
 
-const Course = () => {
+export const Course = () => {
   const { currentUser } = useAuth();
   const { trackId } = currentUser;
   const { courseSlug } = useParams();
@@ -19,19 +19,15 @@ const Course = () => {
     <>
       <h2>{course.title}</h2>
 
-      {assignments &&
-        <List>
-          {assignments.map(assignment => (
-            <ListItem key={assignment.id} disablePadding>
-              <ListItemButton component={RouterLink} to={`/student/courses/${course.slug}/assignments/${assignment.id}`}>
-                <ListItemText primary={assignment.title} secondary={statusMapping[assignment.status]} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-      }
-    </>
+      <List>
+        {assignments?.map(assignment => (
+          <ListItem key={assignment.id} disablePadding>
+            <ListItemButton component={RouterLink} to={`/student/courses/${course.slug}/assignments/${assignment.id}`}>
+              <ListItemText primary={assignment.title} secondary={statusMapping[assignment.status]} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+  </>
   );
 }
-
-export default Course;

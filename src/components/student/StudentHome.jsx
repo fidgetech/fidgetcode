@@ -1,9 +1,7 @@
-import Courses from './Courses';
+import { Courses } from './Courses';
 
-const StudentHome = () => {
+export const StudentHome = () => {
   return (
     <Courses />
   );
 };
-
-export default StudentHome;

@@ -15,7 +15,7 @@ export const AssignmentContent = ({ assignment }) => {
 
       <Typography variant='h5'>Objectives</Typography>
       <List>
-        {sortedObjectives.map(objective => (
+        {sortedObjectives?.map(objective => (
           <ListItem key={objective.number} disablePadding>
             <ListItemText primary={objective.content} />
           </ListItem>

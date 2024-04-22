@@ -10,6 +10,7 @@ export default defineConfig({
       components: "/src/components",
       student: "/src/components/student",
       teacher: "/src/components/teacher",
+      shared: "/src/components/shared",
       hooks: "/src/hooks",
       contexts: "/src/contexts",
       lib: "/src/lib",

@@ -3,21 +3,19 @@
 // import './App.css'
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
-import { createBrowserRouter, RouterProvider, Navigate, Outlet } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Navigate, Outlet, useLocation } from "react-router-dom";
 import { RoutingErrorPage, PermissionsErrorPage, MiscErrorPage } from "components/Layout/ErrorPages.jsx";
 import MaterialLayout from 'components/Layout/MaterialLayout';
 import { AuthProvider, useAuth } from 'contexts/AuthContext';
 import Authentication from 'components/Auth/Authentication';
-import { Typography } from '@mui/material';
 import { ThemeProviderWrapper } from 'contexts/ThemeContext';
 import Loading from 'components/Layout/Loading';
-import StudentHome from "student/StudentHome";
-import Course from "student/Course";
-import { Assignment } from "student/Assignment/Assignment";
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from 'lib/queryClient';
 import { NotificationProvider } from 'contexts/NotificationContext';
 import { Notification } from 'components/Layout/Notification';
+import { studentRoutes } from 'student/routes';
+import { teacherRoutes } from 'teacher/routes';
 
 export default function App() {
   const router = createBrowserRouter([
@@ -61,23 +59,14 @@ export default function App() {
   )
 }
 
-const studentRoutes = [
-  { path: '', element: <StudentHome /> },
-  { path: 'courses/:courseSlug', element: <Course /> },
-  { path: 'courses/:courseSlug/assignments/:assignmentId', element: <Assignment /> },
-];
-
-const teacherRoutes = [
-  { path: '', element: <Typography>Teacher routes coming soon...</Typography> },
-];
-
 const MainLayout = () => {
   const { loading } = useAuth();
+  const location = useLocation();
 
   return (
     <MaterialLayout staticNavbar={loading}>
       <Notification />
-      <ErrorBoundary FallbackComponent={MiscErrorPage}>
+      <ErrorBoundary FallbackComponent={MiscErrorPage} key={location.pathname}>
         <Suspense fallback={<Loading text='Fetching data...' />}>
           <Outlet />
         </Suspense>
