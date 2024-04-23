@@ -1,6 +1,7 @@
 import { db } from 'services/firebase.js';
 import { useQuery } from '@tanstack/react-query';
-import { doc, collection, getDoc, getDocs, query, orderBy, where } from 'firebase/firestore';
+import { doc, collection, getDoc, getDocs, setDoc, query, orderBy, where, serverTimestamp } from 'firebase/firestore';
+import { useStudentCourseAssignments } from './useStudentData';
 
 const fetchTracks = async () => {
   console.log(`fetching all tracks`);
@@ -74,4 +75,49 @@ export const useCourseAssignmentTemplates = ({ trackId, courseId }) => {
     enabled: !!courseId && !!trackId
   });
   return { assignmentTemplates };
+}
+
+export const useCourseAssignmentTemplatesWithAssignments = ({ trackId, courseId, studentId }) => {
+  const { assignmentTemplates } = useCourseAssignmentTemplates({ trackId, courseId });
+  const { assignments } = useStudentCourseAssignments({ studentId, courseId });
+  const assignmentTemplatesWithAssignments = assignmentTemplates.map(template => {
+    const studentAssignment = assignments.find(assignment => assignment.templateId === template.id);
+    let status;
+    if (!studentAssignment) {
+      status = 'Not assigned';
+    } else if (studentAssignment.status === 'submitted') {
+      status = 'Awaiting teacher review';
+    } else if (studentAssignment.status === 'assigned') {
+      status = 'Awaiting student submission';
+    } else {
+      status = 'Unexpected status';
+    }
+    return { ...template, status, studentAssignment };
+  });
+  return { assignmentTemplatesWithAssignments };
+}
+
+export const assignAssignmentToStudent = async ({ studentId, trackId, courseId, templateId }) => {
+  if (!studentId || !trackId || !courseId || !templateId) throw new Error('Student ID, Track ID, Course ID, and Template ID are required to assign assignment to student');
+  console.log(`assigning assignment ${templateId} to student ${studentId}`);
+  const templateRef = doc(db, 'tracks', trackId, 'courses', courseId, 'assignmentTemplates', templateId);
+  const templateDoc = await getDoc(templateRef);
+  if (!templateDoc.exists) throw new Error('Assignment template not found');
+  const template = { id: templateDoc.id, ...templateDoc.data() };
+  const { title, content, objectives } = template;
+  const assignmentData = {
+    createdAt: serverTimestamp(),
+    status: 'assigned',
+    studentId,
+    courseId,
+    templateId,
+    title,
+    content,
+    objectives,
+  };
+  const assignmentsRef = collection(db, 'students', studentId, 'assignments');
+  const existingAssignmentExists  = query(assignmentsRef, where('templateId', '==', templateId));
+  if (existingAssignmentExists) {
+    await setDoc(doc(assignmentsRef), assignmentData);
+  }
 }
