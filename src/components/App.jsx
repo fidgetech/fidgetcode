@@ -16,6 +16,8 @@ import { NotificationProvider } from 'contexts/NotificationContext';
 import { Notification } from 'components/Layout/Notification';
 import { studentRoutes } from 'student/routes';
 import { teacherRoutes } from 'teacher/routes';
+import { DialogProvider } from 'contexts/DialogContext';
+
 
 export default function App() {
   const router = createBrowserRouter([
@@ -68,7 +70,9 @@ const MainLayout = () => {
       <Notification />
       <ErrorBoundary FallbackComponent={MiscErrorPage} key={location.pathname}>
         <Suspense fallback={<Loading text='Fetching data...' />}>
-          <Outlet />
+          <DialogProvider>
+            <Outlet />
+          </DialogProvider>
         </Suspense>
       </ErrorBoundary>
     </MaterialLayout>
