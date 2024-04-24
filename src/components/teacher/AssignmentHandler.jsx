@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useCourse } from 'hooks/useStudentData';
 import { useStudent, useCourseAssignmentTemplatesWithAssignments, assignAssignmentToStudent } from 'hooks/useTeacherData';
+import { AssignmentSubmissions } from './AssignmentSubmissions';
 import { AssignmentReview } from './AssignmentReview';
 import { Button, Typography, Divider } from '@mui/material';
 import { useDialog } from 'contexts/DialogContext';
@@ -62,6 +63,8 @@ export const AssignmentHandler = () => {
 
       {assignmentStatus === 'submitted' &&
         <>
+          <Divider sx={{ my: 4 }} />
+          <AssignmentSubmissions assignment={assignment} />
           <Divider sx={{ my: 4 }} />
           <AssignmentReview assignment={assignment} />
         </>

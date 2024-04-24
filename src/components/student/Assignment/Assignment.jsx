@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { AssignmentContent } from './AssignmentContent';
 import { AssignmentForm } from './AssignmentForm';
 import { Divider } from '@mui/material';
@@ -9,12 +10,22 @@ export const Assignment = () => {
   const { currentUser } = useAuth();
   const { assignmentId } = useParams();
   const { assignment } = useAssignment({ studentId: currentUser.uid, assignmentId });
+  const [ formSubmitted, setFormSubmitted ] = useState(false);
 
   return (
     <>
-      <AssignmentContent assignment={assignment} />
+      <AssignmentContent
+        assignment={assignment}
+        includeContent={!formSubmitted && assignment.status === 'assigned'} 
+        formSubmitted={formSubmitted} setFormSubmitted={setFormSubmitted}  
+      />
+
       <Divider sx={{ my: 4 }} />
-      <AssignmentForm assignment={assignment} />
+
+      <AssignmentForm
+        assignment={assignment}
+        formSubmitted={formSubmitted} setFormSubmitted={setFormSubmitted}
+      />
     </>
   );
 }

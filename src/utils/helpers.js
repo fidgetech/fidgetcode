@@ -1,3 +1,4 @@
+// import DOMPurify from 'dompurify';
 import { query, where, getDocs } from 'firebase/firestore';
 
 // fetch all documents from a collection where field is in a list of ids
@@ -13,3 +14,26 @@ export async function fetchDocumentsInChunks(collectionRef, field, ids, chunkSiz
   }
   return documents;
 }
+
+export const formatMarkdownForRender = (inputText) => {
+  return inputText.replace(/(?<!\n)\n(?!\n)/g, '  \n'); // force markdown to recognize single newlines
+};
+
+export const localeOptions = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+
+// const sanitizeValue = (value) => typeof value === 'string' ? DOMPurify.sanitize(value) : value;
+// export const sanitizeObject = (obj) => {
+//   if (obj === null) return null;
+//   if (Array.isArray(obj)) return obj.map(item => sanitizeObject(item));
+//   if (typeof obj === 'object') {
+//     return Object.fromEntries(
+//       Object.entries(obj).map(([key, value]) => {
+//         if (typeof value === 'object' || Array.isArray(value)) {
+//           return [key, sanitizeObject(value)];
+//         }
+//         return [key, sanitizeValue(value)];
+//       })
+//     );
+//   }
+//   return sanitizeValue(obj);
+// };

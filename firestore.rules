@@ -25,10 +25,18 @@ service cloud.firestore {
         allow write: if false;
 
         match /submissions/{submissionId} {
-          // allow students to read their own submissions, no write
+          function requiredKeys() { return ['createdAt', 'studentId', 'assignmentId', 'url'] }
+          function optionalKeys() { return ['note'] }
+          // Allow students to read their own submissions, no write
           allow read: if request.auth.uid == resource.data.studentId;
-          allow create: if request.auth.uid == request.resource.data.studentId;
-          // I'll need more specifics for create tho, requiring fields and disallowing unwanted fields
+          allow update, delete: if false;
+          allow create: if 
+            request.resource.data.keys().hasAll(requiredKeys()) && 
+            request.resource.data.keys().hasOnly(requiredKeys().join(optionalKeys())) && 
+            request.resource.data.studentId == request.auth.uid && 
+            request.resource.data.assignmentId == assignmentId && 
+            request.resource.data.url is string && 
+            request.resource.data.url.size() > 0;
         }
       }
     }

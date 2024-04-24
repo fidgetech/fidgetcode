@@ -1,7 +1,7 @@
 import Markdown from 'react-markdown';
 import { List, ListItem, ListItemText, Typography, Divider } from '@mui/material';
 
-export const AssignmentContent = ({ assignment }) => {
+export const AssignmentContent = ({ assignment, includeContent=true }) => {
   const { title, content, objectives } = assignment;
   const sortedObjectives = objectives.sort((a, b) => a.number - b.number);
 
@@ -9,11 +9,9 @@ export const AssignmentContent = ({ assignment }) => {
     <>
       <Typography variant='h4' sx={{ fontWeight: 'bold' }}>{title}</Typography>
 
-      <Markdown>{content}</Markdown>
+      {includeContent && <Markdown>{content}</Markdown>}
 
-      <Divider sx={{ my: 4 }} />
-
-      <Typography variant='h5'>Objectives</Typography>
+      <Typography variant='h5' sx={{ mt: 4 }}>Objectives</Typography>
       <List>
         {sortedObjectives?.map(objective => (
           <ListItem key={objective.number} disablePadding>

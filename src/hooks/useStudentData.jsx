@@ -35,7 +35,7 @@ const fetchStudentCourseAssignments = async (studentId, courseId) => {
   console.log(`fetching assignments for student ${studentId}, course ${courseId}`);
   const studentRef = doc(db, 'students', studentId);
   const assignmentsRef = collection(studentRef, 'assignments');
-  const assignmentsQuery = query(assignmentsRef, where('courseId', '==', courseId));
+  const assignmentsQuery = query(assignmentsRef, where('courseId', '==', courseId), orderBy('number'));
   const assignmentsSnapshot = await getDocs(assignmentsQuery);
   if (assignmentsSnapshot.empty) {
     console.log('no assignments found for the student for this course');

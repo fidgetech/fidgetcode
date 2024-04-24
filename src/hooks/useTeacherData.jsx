@@ -41,6 +41,15 @@ const fetchCourseAssignmentTemplates = async (trackId, courseId) => {
   return assignmentTemplatesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 }
 
+const fetchAssignmentSubmissions = async (studentId, assignmentId) => {
+  if (!studentId || !assignmentId) throw new Error('Student ID and Assignment ID are required to fetch assignment submissions');
+  console.log(`fetching submissions for student ${studentId} and assignment ${assignmentId}`);
+  const submissionsRef = collection(db, 'students', studentId, 'assignments', assignmentId, 'submissions');
+  const submissionsQuery = query(submissionsRef, orderBy('createdAt', 'desc'));
+  const submissionsSnapshot = await getDocs(submissionsQuery);
+  return submissionsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+}
+
 export const useTracks = () => {
   const { data: tracks } = useQuery({
     queryKey: ['tracks'],
@@ -97,6 +106,15 @@ export const useCourseAssignmentTemplatesWithAssignments = ({ trackId, courseId,
   return { assignmentTemplatesWithAssignments };
 }
 
+export const useAssignmentSubmissions = ({ studentId, assignmentId }) => {
+  const { data: submissions } = useQuery({
+    queryKey: ['assignmentSubmissions', studentId, assignmentId],
+    queryFn: () => fetchAssignmentSubmissions(studentId, assignmentId),
+    enabled: !!studentId && !!assignmentId
+  });
+  return { submissions };
+}
+
 export const assignAssignmentToStudent = async ({ studentId, trackId, courseId, templateId }) => {
   if (!studentId || !trackId || !courseId || !templateId) throw new Error('Student ID, Track ID, Course ID, and Template ID are required to assign assignment to student');
   console.log(`assigning assignment ${templateId} to student ${studentId}`);
@@ -104,7 +122,7 @@ export const assignAssignmentToStudent = async ({ studentId, trackId, courseId, 
   const templateDoc = await getDoc(templateRef);
   if (!templateDoc.exists) throw new Error('Assignment template not found');
   const template = { id: templateDoc.id, ...templateDoc.data() };
-  const { title, content, objectives } = template;
+  const { title, content, objectives, number } = template;
   const assignmentData = {
     createdAt: serverTimestamp(),
     status: 'assigned',
@@ -114,6 +132,7 @@ export const assignAssignmentToStudent = async ({ studentId, trackId, courseId, 
     title,
     content,
     objectives,
+    number,
   };
   const assignmentsRef = collection(db, 'students', studentId, 'assignments');
   const existingAssignmentExists  = query(assignmentsRef, where('templateId', '==', templateId));

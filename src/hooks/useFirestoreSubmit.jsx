@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { db } from 'services/firebase';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, setDoc, doc } from 'firebase/firestore';
 
 export const useFirestoreSubmit = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const submitData = async (collectionPath, data) => {
+  const createData = async (collectionPath, data) => {
     setLoading(true);
     setError(null);
     try {
@@ -20,5 +20,17 @@ export const useFirestoreSubmit = () => {
     }
   };
 
-  return { loading, error, submitData };
+  const updateData = async (docPath, data) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await setDoc(doc(db, ...docPath), data, { merge: true });
+      setLoading(false);
+    } catch (err) {
+      setError(new Error(`Failed to update data in Firestore: ${err.message}`));
+      setLoading(false);
+    }
+  }  
+
+  return { loading, error, createData, updateData };
 };
