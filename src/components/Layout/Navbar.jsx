@@ -17,7 +17,7 @@ export const StaticNavbar = () => {
     <AppBar position="static">
       <Toolbar>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-          <Typography variant="h6" sx={{ padding: '6px 16px', borderRadius: '4px' }}>Epicenter 2.0</Typography>
+          <Typography variant="h6" sx={{ padding: '6px 16px', borderRadius: '4px' }}>Fidgetcode</Typography>
           <Box>
             {isSignedIn && (
               <>
@@ -87,7 +87,7 @@ export const Navbar = () => {
               '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.08)' },
             }}
           >
-            Epicenter 2.0
+            Fidgetcode
           </Typography>
 
           <Box>

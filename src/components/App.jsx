@@ -18,7 +18,6 @@ import { studentRoutes } from 'student/routes';
 import { teacherRoutes } from 'teacher/routes';
 import { DialogProvider } from 'contexts/DialogContext';
 
-
 export default function App() {
   const router = createBrowserRouter([
     {

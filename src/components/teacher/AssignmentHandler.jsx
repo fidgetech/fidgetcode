@@ -14,9 +14,10 @@ const statusMapping = {
 };
 
 export const AssignmentHandler = () => {
-  const { trackId, courseSlug, studentId, assignmentId } = useParams();
-  const { course } = useCourse({ trackId, courseSlug });
+  const { courseSlug, studentId, assignmentId } = useParams();
   const { student } = useStudent({ studentId });
+  const { trackId } = student;
+  const { course } = useCourse({ trackId, courseSlug });
   const { assignmentTemplatesWithAssignments } = useCourseAssignmentTemplatesWithAssignments({ studentId, trackId, courseId: course.id });
 
   const template = useMemo(() => assignmentTemplatesWithAssignments.find(t => t.id === assignmentId), [assignmentTemplatesWithAssignments, assignmentId]);

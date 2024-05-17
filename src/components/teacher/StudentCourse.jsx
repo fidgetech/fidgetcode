@@ -6,8 +6,9 @@ import { useStudent, useCourseAssignmentTemplatesWithAssignments } from 'hooks/u
 import { List, ListItem, ListItemButton, ListItemText, Typography } from '@mui/material';
 
 export const StudentCourse = () => {
-  const { trackId, courseSlug, studentId } = useParams();
+  const { studentId, courseSlug } = useParams();
   const { student } = useStudent({ studentId });
+  const { trackId } = student;
   const { course } = useCourse({ trackId, courseSlug });
   const { assignmentTemplatesWithAssignments } = useCourseAssignmentTemplatesWithAssignments({ studentId, trackId, courseId: course.id });
 

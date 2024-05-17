@@ -1,11 +1,11 @@
 'use strict';
 
-import * as functions from 'firebase-functions';
-import admin from 'firebase-admin';
+const functions = require('firebase-functions');
+const admin = require('firebase-admin');
 
 admin.initializeApp();
 
-export const updateAssignmentStatus = functions.firestore
+exports.updateAssignmentStatus = functions.firestore
   .document('students/{studentId}/assignments/{assignmentId}/submissions/{submissionId}')
   .onWrite(async (change, context) => {
     const { studentId, assignmentId } = context.params;

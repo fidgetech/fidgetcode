@@ -1,3 +1,3 @@
-import { updateAssignmentStatus } from './submission.js';
+const { updateAssignmentStatus } = require('./submission.js');
 
-export { updateAssignmentStatus };
+module.exports = { updateAssignmentStatus };

@@ -9,6 +9,7 @@ export const useFirestoreSubmit = () => {
   const createData = async (collectionPath, data) => {
     setLoading(true);
     setError(null);
+    console.log('data:', data, 'collectionPath:', collectionPath)
     try {
       const collectionRef = collection(db, ...collectionPath);
       const docRef = await addDoc(collectionRef, data);

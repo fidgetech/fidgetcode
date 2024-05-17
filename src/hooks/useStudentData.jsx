@@ -12,10 +12,11 @@ const fetchTrack = async (trackId) => {
 }
 
 const fetchCourses = async (trackId) => {
+  console.log('in fetchCourses', trackId)
   if (!trackId) throw new Error('Track ID is required to fetch courses');
-  console.log(`fetching courses for track ${trackId}`);
   const coursesRef = collection(db, 'tracks', trackId, 'courses');
   const coursesQuery = query(coursesRef, orderBy('number'));
+  console.log('fetching courses for track', trackId);
   const coursesSnapshot = await getDocs(coursesQuery);
   if (coursesSnapshot.empty) throw new Error('No courses found for the given track');
   return coursesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
