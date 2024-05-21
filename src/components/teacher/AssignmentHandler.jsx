@@ -1,7 +1,7 @@
-import { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useCourse } from 'hooks/useStudentData';
-import { useStudent, useCourseAssignmentTemplatesWithAssignments, assignAssignmentToStudent } from 'hooks/useTeacherData';
+import { useStudent, assignAssignmentToStudent } from 'hooks/useTeacherData';
+import { useAssignment } from 'hooks/useStudentData';
 import { AssignmentSubmissions } from './AssignmentSubmissions';
 import { AssignmentReview } from './AssignmentReview';
 import { Button, Typography, Divider } from '@mui/material';
@@ -11,6 +11,7 @@ import { AssignmentContent } from 'student/Assignment/AssignmentContent';
 const statusMapping = {
   submitted: 'Awaiting teacher review',
   assigned: 'Awaiting student submission',
+  reviewed: 'Reviewed',
 };
 
 export const AssignmentHandler = () => {
@@ -18,41 +19,29 @@ export const AssignmentHandler = () => {
   const { student } = useStudent({ studentId });
   const { trackId } = student;
   const { course } = useCourse({ trackId, courseSlug });
-  const { assignmentTemplatesWithAssignments } = useCourseAssignmentTemplatesWithAssignments({ studentId, trackId, courseId: course.id });
-
-  const template = useMemo(() => assignmentTemplatesWithAssignments.find(t => t.id === assignmentId), [assignmentTemplatesWithAssignments, assignmentId]);
-  const assignment = useMemo(() => template?.studentAssignment, [template]);
-
-  const [assignmentStatus, setAssignmentStatus] = useState(assignment?.status);
+  const { assignment } = useAssignment({ studentId, assignmentId });
 
   const confirmDialogOptions = {
     title: 'Confirm Assigning',
-    message: `Assign ${template.title} to ${student.name}?`,
+    message: `Assign ${assignment.title} to ${student.name}?`,
     onConfirm: async () => {
-      console.log('assigning assignment', template.id, 'to student', studentId)
-      await assignAssignmentToStudent({ studentId, trackId, courseId: course.id, templateId: template.id });
-      setAssignmentStatus('assigned')
+      console.log('assigning assignment', assignment.templateId, 'to student', studentId)
+      await assignAssignmentToStudent({ studentId, trackId, courseId: course.id, templateId: assignment.templateId });
     }
   };
   const { showConfirm } = useDialog();
   const handleShowConfirm = () => showConfirm(confirmDialogOptions);
 
-  useEffect(() => {
-    if (assignment?.status) {
-      setAssignmentStatus(assignment.status);
-    }
-  }, [assignment]);
-
   return (
     <>
       <Typography variant='h6' gutterBottom>
-        {student.name} | {course.title} | {template.title}
+        {student.name} | {course.title} | {assignment.title}
       </Typography>
       <Typography variant='body1' gutterBottom sx={{ fontStyle: 'italic' }}>
-        {statusMapping[assignmentStatus] || `Not yet assigned to ${student.name}`}
+        {statusMapping[assignment.status] || `Not yet assigned to ${student.name}`}
       </Typography>
 
-      {!assignmentStatus &&
+      {!assignment.status &&
         <Button variant='contained' color='primary' sx={{ mt: 2 }} onClick={handleShowConfirm}>
           Assign to {student.name}
         </Button>
@@ -60,9 +49,9 @@ export const AssignmentHandler = () => {
 
       <Divider sx={{ my: 4 }} />
 
-      <AssignmentContent assignment={template} />
+      <AssignmentContent assignment={assignment} />
 
-      {assignmentStatus === 'submitted' &&
+      {assignment.status === 'submitted' &&
         <>
           <Divider sx={{ my: 4 }} />
           <AssignmentSubmissions assignment={assignment} />

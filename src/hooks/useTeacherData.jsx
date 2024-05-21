@@ -76,7 +76,14 @@ const fetchAssignmentsAwaitingReview = async () => {
   return assignmentsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 }
 
-
+const fetchAssignmentTemplate = async (trackId, courseId, templateId) => {
+  if (!trackId || !courseId || !templateId) throw new Error('Track ID, Course ID, and Template ID are required to fetch assignment template');
+  console.log(`fetching assignment template ${templateId}`);
+  const templateRef = doc(db, 'tracks', trackId, 'courses', courseId, 'assignmentTemplates', templateId);
+  const templateDoc = await getDoc(templateRef);
+  if (!templateDoc.exists) throw new Error('Assignment template not found');
+  return { id: templateDoc.id, ...templateDoc.data() };
+}
 
 
 
@@ -137,6 +144,8 @@ export const useCourseAssignmentTemplatesWithAssignments = ({ trackId, courseId,
       status = 'Awaiting teacher review';
     } else if (studentAssignment.status === 'assigned') {
       status = 'Awaiting student submission';
+    } else if (studentAssignment.status === 'reviewed') {
+      status = 'Reviewed';
     } else {
       status = 'Unexpected status';
     }
@@ -194,6 +203,15 @@ export const useTracksWithStudents = () => {
     });
   }, [tracks, students]);
   return { tracks: tracksWithStudents };
+}
+
+export const useAssignmentTemplate = ({ trackId, courseId, templateId }) => {
+  const { data: template } = useQuery({
+    queryKey: ['assignmentTemplate', trackId, courseId, templateId],
+    queryFn: () => fetchAssignmentTemplate(trackId, courseId, templateId),
+    enabled: !!trackId && !!courseId && !!templateId
+  });
+  return { template };
 }
 
 

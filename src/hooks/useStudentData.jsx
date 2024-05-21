@@ -1,6 +1,7 @@
+import { useEffect } from 'react';
 import { db } from 'services/firebase.js';
-import { useQuery } from '@tanstack/react-query';
-import { collection, doc, getDoc, getDocs, query, orderBy, where } from 'firebase/firestore';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { collection, doc, getDoc, getDocs, query, orderBy, where, onSnapshot } from 'firebase/firestore';
 
 const fetchTrack = async (trackId) => {
   if (!trackId) throw new Error('Track ID is required to fetch track');
@@ -12,7 +13,6 @@ const fetchTrack = async (trackId) => {
 }
 
 const fetchCourses = async (trackId) => {
-  console.log('in fetchCourses', trackId)
   if (!trackId) throw new Error('Track ID is required to fetch courses');
   const coursesRef = collection(db, 'tracks', trackId, 'courses');
   const coursesQuery = query(coursesRef, orderBy('number'));
@@ -90,19 +90,50 @@ export const useCourse = ({ trackId, courseId, courseSlug }) => {
 }
 
 export const useStudentCourseAssignments = ({ studentId, courseId }) => {
+  const queryClient = useQueryClient();
+  const queryKey = ['studentCourseAssignments', studentId, courseId];
+
   const { data: assignments } = useQuery({
-    queryKey: ['studentCourseAssignments', studentId, courseId],
+    queryKey,
     queryFn: () => fetchStudentCourseAssignments(studentId, courseId),
     enabled: !!studentId && !!courseId
   });
+
+  useEffect(() => {
+    if (studentId && courseId) {
+      const studentRef = doc(db, 'students', studentId);
+      const assignmentsRef = collection(studentRef, 'assignments');
+      const assignmentsQuery = query(assignmentsRef, where('courseId', '==', courseId), orderBy('number'));
+      const unsubscribe = onSnapshot(assignmentsQuery, (snapshot) => {
+        const assignments = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        queryClient.setQueryData(queryKey, assignments);
+      });
+      return () => unsubscribe();
+    }
+  }, [studentId, courseId, queryClient]);
+
   return { assignments };
 }
 
 export const useAssignment = ({ studentId, assignmentId }) => {
+  const queryClient = useQueryClient();
+  const queryKey = ['assignment', studentId, assignmentId];
+
   const { data: assignment } = useQuery({
-    queryKey: ['assignment', studentId, assignmentId],
+    queryKey,
     queryFn: () => fetchAssignment(studentId, assignmentId),
     enabled: !!studentId && !!assignmentId
   });
+
+  useEffect(() => {
+    if (studentId && assignmentId) {
+      const assignmentRef = doc(db, 'students', studentId, 'assignments', assignmentId);
+      const unsubscribe = onSnapshot(assignmentRef, (snapshot) => {
+        queryClient.setQueryData(queryKey, { id: snapshot.id, ...snapshot.data() });
+      });
+      return () => unsubscribe();
+    }
+  });
+
   return { assignment };
 }

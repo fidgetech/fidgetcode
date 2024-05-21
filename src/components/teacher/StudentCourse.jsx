@@ -20,7 +20,10 @@ export const StudentCourse = () => {
       <List>
         {assignmentTemplatesWithAssignments.map(template => (
           <ListItem key={template.id} disablePadding>
-            <ListItemButton component={RouterLink} to={`assignments/${template.id}`}>
+            <ListItemButton
+              component={RouterLink}
+              to={template.studentAssignment ? `assignments/${template.studentAssignment.id}` : `templates/${template.id}`}
+            >
               <ListItemText primary={template.title} secondary={template.status} />
             </ListItemButton>
           </ListItem>
