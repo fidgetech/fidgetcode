@@ -56,6 +56,7 @@ const fetchAssignmentSubmissions = async (studentId, assignmentId) => {
   const submissionsRef = collection(db, 'students', studentId, 'assignments', assignmentId, 'submissions');
   const submissionsQuery = query(submissionsRef, orderBy('createdAt', 'desc'));
   const submissionsSnapshot = await getDocs(submissionsQuery);
+  console.log('snapshot', submissionsSnapshot.docs.map(doc => ({ studentId })));
   return submissionsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 }
 
@@ -155,11 +156,13 @@ export const useCourseAssignmentTemplatesWithAssignments = ({ trackId, courseId,
 }
 
 export const useAssignmentSubmissions = ({ studentId, assignmentId }) => {
+  console.log('hitting useAssignmentSubmissions hook', studentId, assignmentId)
   const { data: submissions } = useQuery({
     queryKey: ['assignmentSubmissions', studentId, assignmentId],
     queryFn: () => fetchAssignmentSubmissions(studentId, assignmentId),
     enabled: !!studentId && !!assignmentId
   });
+  console.log('submissions', submissions)
   return { submissions };
 }
 

@@ -21,7 +21,7 @@ export default function Authentication() {
   return (
     <>
       <Typography variant="h4" component="h1" align="center" gutterBottom sx={{ mt: 4 }}>
-        Epicenter 2.0
+        Fidgetcode
       </Typography>
 
       <Container component="main" maxWidth="xs">

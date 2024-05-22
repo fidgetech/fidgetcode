@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { db } from 'services/firebase.js';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { collection, doc, getDoc, getDocs, query, orderBy, where, onSnapshot } from 'firebase/firestore';
@@ -117,12 +117,13 @@ export const useStudentCourseAssignments = ({ studentId, courseId }) => {
 
 export const useAssignment = ({ studentId, assignmentId }) => {
   const queryClient = useQueryClient();
-  const queryKey = ['assignment', studentId, assignmentId];
+  const queryKey = useMemo(() => ['assignment', studentId, assignmentId], [studentId, assignmentId]);
 
+  console.log('hitting useAssignment hook', studentId, assignmentId)
   const { data: assignment } = useQuery({
     queryKey,
     queryFn: () => fetchAssignment(studentId, assignmentId),
-    enabled: !!studentId && !!assignmentId
+    enabled: !!studentId && !!assignmentId,
   });
 
   useEffect(() => {
@@ -133,7 +134,7 @@ export const useAssignment = ({ studentId, assignmentId }) => {
       });
       return () => unsubscribe();
     }
-  });
+  }, [studentId, assignmentId, queryClient, queryKey]);
 
   return { assignment };
 }

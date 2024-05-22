@@ -1,5 +1,5 @@
 import Markdown from 'react-markdown';
-import { List, ListItem, ListItemText, Typography, Divider } from '@mui/material';
+import { List, ListItem, ListItemText, Typography } from '@mui/material';
 
 export const AssignmentContent = ({ assignment, includeContent=true }) => {
   const { title, content, objectives } = assignment;

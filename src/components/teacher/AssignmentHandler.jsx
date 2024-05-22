@@ -51,12 +51,16 @@ export const AssignmentHandler = () => {
 
       <AssignmentContent assignment={assignment} />
 
-      {assignment.status === 'submitted' &&
+      {assignment.status &&
         <>
           <Divider sx={{ my: 4 }} />
           <AssignmentSubmissions assignment={assignment} />
-          <Divider sx={{ my: 4 }} />
-          <AssignmentReview assignment={assignment} />
+          {assignment.status === 'submitted' &&
+            <>
+              <Divider sx={{ my: 4 }} />
+              <AssignmentReview assignment={assignment} />
+            </>
+          }
         </>
       }
     </>

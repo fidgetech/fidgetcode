@@ -8,7 +8,7 @@ import { queryClient } from 'lib/queryClient';
 import DOMPurify from 'dompurify';
 import { NoteField } from 'shared/NoteField';
 
-export const AssignmentForm = ({ assignment, formSubmitted, setFormSubmitted }) => {
+export const AssignmentForm = ({ assignment }) => {
   const { currentUser } = useAuth();
   const { loading, error, createData } = useFirestoreSubmit();
   const [ validationError, setValidationError ] = useState(null);
@@ -33,7 +33,6 @@ export const AssignmentForm = ({ assignment, formSubmitted, setFormSubmitted }) 
     });
     if (submissionId) {
       console.log('Submission created with ID:', submissionId);
-      setFormSubmitted(true);
       setTimeout(() => {
         queryClient.invalidateQueries(['assignment', currentUser.uid, assignment.id]);
       }, 1000);    
@@ -46,31 +45,23 @@ export const AssignmentForm = ({ assignment, formSubmitted, setFormSubmitted }) 
 
   return (
     <>
-      {formSubmitted || assignment.status === 'submitted' ?
-        <Alert severity="success" sx={{ mt: 2 }}>
-          Your project has been submitted and is awaiting review.
-        </Alert>
-        :
-        <>
-          <Typography variant='h5'>Submit your project below</Typography>
-          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-            {(error || validationError) && <Alert severity="error" sx={{ my: 2 }}>{error?.message || validationError}</Alert>}
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="url"
-              name="url"
-              label="GitHub repo URL"
-              autoComplete="off"
-            />
-            <NoteField label='Note (optional)' />
-            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-              Submit project
-            </Button>
-          </Box>
-        </>
-      }
+      <Typography variant='h5'>Submit your project below</Typography>
+      <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+        {(error || validationError) && <Alert severity="error" sx={{ my: 2 }}>{error?.message || validationError}</Alert>}
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          id="url"
+          name="url"
+          label="GitHub repo URL"
+          autoComplete="off"
+        />
+        <NoteField label='Note (optional)' />
+        <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
+          Submit project
+        </Button>
+      </Box>
     </>
   );
 }
