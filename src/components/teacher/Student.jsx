@@ -19,7 +19,7 @@ const { track } = useTrack({ trackId });
 
       <Divider sx={{ my: 4 }} />
 
-      <Typography variant='h6' sx={{ mt: 2 }}>Click course to view progress:</Typography>
+      <Typography variant='h6' sx={{ mt: 2 }}>Select course to view {student.name} progress:</Typography>
       <CoursesList trackId={trackId} />
     </>
   );

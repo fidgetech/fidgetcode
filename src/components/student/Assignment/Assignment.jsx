@@ -1,6 +1,6 @@
 import { AssignmentContent } from './AssignmentContent';
 import { AssignmentForm } from './AssignmentForm';
-import { Divider, Alert, Typography, Box } from '@mui/material';
+import { Divider, Alert, Box } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { useAssignment } from 'hooks/useStudentData';
 import { useAuth } from 'contexts/AuthContext';

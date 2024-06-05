@@ -187,12 +187,16 @@ export const useAssignmentsAwaitingReview = () => {
   return { assignments };
 }
 
-export const useStudentsWithAssignmentsAwaitingReview = (students) => {
+export const useStudentsWithAssignmentsAwaitingReview = ({ students, courseId }) => {
   const { assignments } = useAssignmentsAwaitingReview();
   const studentsWithAssignments = useMemo(() => {
     return students.map(student => {
       const studentAssignments = assignments.filter(assignment => assignment.studentId === student.id);
-      return { ...student, assignments: studentAssignments };
+      const studentAssignmentsForCourse = courseId ? studentAssignments.filter(assignment => assignment.courseId === courseId) : studentAssignments;
+      return {
+        ...student,
+        assignments: courseId ? studentAssignmentsForCourse : studentAssignments
+      };
     });
   }, [students, assignments]);
   return { students: studentsWithAssignments };

@@ -3,15 +3,15 @@ import { List, ListItem, ListItemText, ListItemButton } from '@mui/material';
 import pluralize from 'pluralize';
 import { useStudents, useTrackStudents, useStudentsWithAssignmentsAwaitingReview } from 'hooks/useTeacherData';
 
-export const StudentsList = ({ trackId }) => {
-  const { students: allStudents } = trackId ? useTrackStudents({ trackId }) : useStudents({ active: true });
-  const { students } = useStudentsWithAssignmentsAwaitingReview(allStudents);
+export const StudentsList = ({ trackId, courseId }) => {
+  const { students } = trackId ? useTrackStudents({ trackId }) : useStudents({ active: true });
+  const { students: studentsWithAssignments } = useStudentsWithAssignmentsAwaitingReview({ students, courseId });
 
   return (
     <List>
-      {students?.map((student) => (
+      {studentsWithAssignments?.map((student) => (
         <ListItem key={student.id} disablePadding>
-          <ListItemButton component={RouterLink} to={`/teacher/students/${student.id}`}>
+          <ListItemButton component={RouterLink} to={courseId ? `students/${student.id}` : `/teacher/students/${student.id}`}>
             <ListItemText
               primary={student.name}
               secondary={student.assignments ? `${student.assignments.length} ${pluralize('assignment', student.assignments.length)} awaiting review` : ''}

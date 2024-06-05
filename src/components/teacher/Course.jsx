@@ -19,8 +19,8 @@ export const Course = () => {
 
       <Divider sx={{ my: 4 }} />
 
-      <Typography variant='h6' sx={{ mt: 2 }}>Click student to view progress:</Typography>
-      <StudentsList trackId={trackId} />
+      <Typography variant='h6' sx={{ mt: 2 }}>Select student to view progress in {course.title}:</Typography>
+      <StudentsList trackId={trackId} courseId={course.id} />
 
       <Divider sx={{ my: 4 }} />
 

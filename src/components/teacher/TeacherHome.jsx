@@ -19,7 +19,7 @@ export const TeacherHome = () => {
       <TracksList />
 
       <h2>Students</h2>
-      <StudentsList withAssignments={true} />
+      <StudentsList />
 
       {/* <h3>OLD:</h3>
       <List>

@@ -6,6 +6,8 @@ import { List, ListItem, ListItemText, ListItemButton } from '@mui/material';
 const statusMapping = {
   assigned: 'Not yet submitted',
   submitted: 'Submitted',
+  fail: 'Requires resubmission',
+  pass: 'Meets expectations',
 };
 
 export const Course = () => {
