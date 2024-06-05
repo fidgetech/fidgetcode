@@ -5,6 +5,7 @@ import { Student } from './Student';
 import { StudentCourse } from './StudentCourse';
 import { AssignmentHandler } from './AssignmentHandler';
 import { AssignmentTemplateHandler } from './AssignmentTemplateHandler';
+import { Template } from './Template';
 
 export const teacherRoutes = [
   { path: '', element: <TeacherHome /> },
@@ -16,5 +17,6 @@ export const teacherRoutes = [
   { path: 'students/:studentId/courses/:courseSlug/assignments/:assignmentId', element: <AssignmentHandler /> },
   { path: 'tracks/:trackId/courses/:courseSlug/students/:studentId/assignments/:assignmentId', element: <AssignmentHandler /> },
   { path: 'students/:studentId/courses/:courseSlug/templates/:templateId', element: <AssignmentTemplateHandler /> },
-  { path: 'tracks/:trackId/courses/:courseSlug/students/:studentId/templates/:templateId', element: <AssignmentTemplateHandler />}
+  { path: 'tracks/:trackId/courses/:courseSlug/students/:studentId/templates/:templateId', element: <AssignmentTemplateHandler />},
+  { path: 'tracks/:trackId/courses/:courseSlug/templates/:templateId', element: <Template /> },
 ];

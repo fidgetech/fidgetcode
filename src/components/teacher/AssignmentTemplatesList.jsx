@@ -13,7 +13,7 @@ export const AssignmentTemplatesList = () => {
     <List>
       {assignmentTemplates?.map((template) => (
         <ListItem key={template.id} disablePadding>
-          <ListItemButton component={RouterLink} to={`templates/${template.slug}`}>
+          <ListItemButton component={RouterLink} to={`templates/${template.id}`}>
             <ListItemText primary={`${template.number}. ${template.title}`} />
           </ListItemButton>
         </ListItem>
