@@ -1,39 +1,71 @@
 import { AssignmentContent } from './AssignmentContent';
 import { AssignmentForm } from './AssignmentForm';
-import { Divider, Alert } from '@mui/material';
+import { Divider, Alert, Typography, Box } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { useAssignment } from 'hooks/useStudentData';
 import { useAuth } from 'contexts/AuthContext';
 import { AssignmentSubmissions } from 'teacher/AssignmentSubmissions';
+
+const statusMapping = {
+  'assigned': {
+    showContent: true,
+    showSubmissions: false,
+    showForm: true,
+    showAlert: false,
+  },
+  'submitted': {
+    showContent: false,
+    showSubmissions: false,
+    showForm: false,
+    showAlert: true,
+    style: 'info',
+    message: 'Your project has been submitted and is awaiting review.'
+  },
+  'pass': {
+    showContent: false,
+    showSubmissions: true,
+    showForm: false,
+    showAlert: true,
+    style: 'success',
+    message: 'Your project meets all expectations!'
+  },
+  'fail': {
+    showContent: true,
+    showSubmissions: true,
+    showForm: true,
+    showAlert: true,
+    style: 'error',
+    message: 'Your project requires resubmission. Please see comments below.'
+  },
+};
 
 export const Assignment = () => {
   const { currentUser } = useAuth();
   const { assignmentId } = useParams();
   const { assignment } = useAssignment({ studentId: currentUser.uid, assignmentId });
 
+  const statusConfig = statusMapping[assignment.status];
+
   return (
     <>
-      <AssignmentContent assignment={assignment} includeContent={assignment.status === 'assigned'} />
+      <AssignmentContent assignment={assignment} includeContent={statusConfig.showContent} />
 
       <Divider sx={{ my: 4 }} />
 
-      {assignment.status === 'submitted' &&
-        <Alert severity="success" sx={{ mt: 2 }}>
-          Your project has been submitted and is awaiting review.
+      {statusConfig.showAlert &&
+        <Alert severity={statusConfig.style} sx={{ my: 4 }}>
+          {statusConfig.message}
         </Alert>
       }
 
-      {assignment.status === 'reviewed' &&
-        <>
-          <Alert severity="info" sx={{ mt: 2 }}>
-            Your project has been reviewed and graded.
-          </Alert>
-          <AssignmentSubmissions assignment={assignment} />
-        </>
+      {statusConfig.showSubmissions &&
+        <AssignmentSubmissions assignment={assignment} />
       }
 
-      {assignment.status === 'assigned' || assignment.status === 'reviewed' &&
-        <AssignmentForm assignment={assignment} />
+      {statusConfig.showForm &&
+        <Box marginY={4}>
+          <AssignmentForm assignment={assignment} />
+        </Box>
       }
     </>
   );

@@ -5,16 +5,23 @@ import { Box, Divider, Typography, List, Card, CardContent, Accordion, Accordion
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { formatMarkdownForRender, localeOptions } from 'utils/helpers';
 
+const gradeMapping = {
+  'none': 'Does not meet this standard yet',
+  'some': 'Meets standard some of the time',
+  'all': 'Meets standard all of the time',
+}
+
 export const AssignmentSubmissions = ({ assignment }) => {
   const { studentId, id: assignmentId } = assignment;
   const { submissions } = useAssignmentSubmissions({ studentId, assignmentId });
-  const latestSubmission = useMemo(() => submissions[submissions.length -1], [submissions]);
-  const otherSubmissions = useMemo(() => submissions.slice(0, -1), [submissions]);
+  const latestSubmission = useMemo(() => submissions[0], [submissions]);
+  const otherSubmissions = useMemo(() => submissions.slice(1, submissions.length), [submissions]);
 
-  console.log('submissions:', submissions)
+  if (!latestSubmission) return null;
+
   return (
     <>
-      <Typography variant='h5' gutterBottom>Latest Submission</Typography>
+      <Typography variant='h5' gutterBottom sx={{ my: 2 }}>Latest Submission</Typography>
       <Card variant="outlined">
         <CardContent>
           <Box marginY={1} sx={{ display: { sm: 'flex' }, justifyContent: { sm: 'space-between' } }}>
@@ -22,7 +29,7 @@ export const AssignmentSubmissions = ({ assignment }) => {
               {latestSubmission.url.replaceAll('https://','').replaceAll('http://','')}
             </Link>
             <Typography color="text.secondary" gutterBottom>
-              {latestSubmission.createdAt.toDate().toLocaleString('en-US', localeOptions)}
+              {latestSubmission.createdAt?.toDate()?.toLocaleString('en-US', localeOptions)}
             </Typography>
           </Box>
           <SubmissionNotes assignment={assignment} submission={latestSubmission} />
@@ -35,9 +42,9 @@ export const AssignmentSubmissions = ({ assignment }) => {
           <List>
             {otherSubmissions.map(submission => (
               <Accordion key={submission.id}>
-                <AccordionSummary expandIcon={<ExpandMoreIcon />} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} sx={{ mt: 2 }}>
                   <Typography color="text.secondary">
-                    {submission.createdAt.toDate().toLocaleString('en-US', localeOptions)}
+                    {submission.createdAt?.toDate()?.toLocaleString('en-US', localeOptions)}
                   </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
@@ -54,14 +61,17 @@ export const AssignmentSubmissions = ({ assignment }) => {
 }
 
 const SubmissionNotes = ({ assignment, submission }) => {
+  console.log('submission in SubmissionNotes', submission)
   const objectives = useMemo(() => {
     const assignmentObjectives = assignment.objectives;
-    const submissionObjectives = submission.review.objectives;
-    return assignmentObjectives.map(objective => {
+    const submissionObjectives = submission.review?.objectives;
+    return submission.review ? assignmentObjectives.map(objective => {
       const grade = submissionObjectives[objective.number];
-      return { number: objective.number, content: objective.content, grade };
-    });
+      const gradeDisplay = gradeMapping[grade];
+      return { number: objective.number, content: objective.content, grade: gradeDisplay };
+    }) : [];
   }, [assignment.objectives, submission.objectives]);
+  console.log('objectives in SubmissionNotes', objectives)
 
   return (
     <>
@@ -75,7 +85,7 @@ const SubmissionNotes = ({ assignment, submission }) => {
             <Box marginY={1} sx={{ display: { sm: 'flex' }, justifyContent: { sm: 'space-between' } }}>
               <Typography variant='body' gutterBottom sx={{ fontWeight: 'bold' }}>Teacher Review</Typography>
               <Typography color="text.secondary" gutterBottom>
-                {submission.review.reviewedAt.toDate().toLocaleString('en-US', localeOptions)}
+                {submission.review.reviewedAt?.toDate()?.toLocaleString('en-US', localeOptions)}
               </Typography>
             </Box>
           </Box>

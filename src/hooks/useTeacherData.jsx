@@ -1,7 +1,7 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { db } from 'services/firebase.js';
-import { useQuery } from '@tanstack/react-query';
-import { doc, collection, collectionGroup, getDoc, getDocs, setDoc, query, orderBy, where, serverTimestamp } from 'firebase/firestore';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { doc, collection, collectionGroup, getDoc, getDocs, setDoc, query, orderBy, where, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { useStudentCourseAssignments } from './useStudentData';
 
 const fetchTracks = async () => {
@@ -138,31 +138,34 @@ export const useCourseAssignmentTemplatesWithAssignments = ({ trackId, courseId,
   const { assignments } = useStudentCourseAssignments({ studentId, courseId });
   const assignmentTemplatesWithAssignments = assignmentTemplates.map(template => {
     const studentAssignment = assignments.find(assignment => assignment.templateId === template.id);
-    let status;
-    if (!studentAssignment) {
-      status = 'Not assigned';
-    } else if (studentAssignment.status === 'submitted') {
-      status = 'Awaiting teacher review';
-    } else if (studentAssignment.status === 'assigned') {
-      status = 'Awaiting student submission';
-    } else if (studentAssignment.status === 'reviewed') {
-      status = 'Reviewed';
-    } else {
-      status = 'Unexpected status';
-    }
-    return { ...template, status, studentAssignment };
+    return { ...template, studentAssignment };
   });
   return { assignmentTemplatesWithAssignments };
 }
 
 export const useAssignmentSubmissions = ({ studentId, assignmentId }) => {
+  const queryClient = useQueryClient();
+  const queryKey = ['assignmentSubmissions', studentId, assignmentId];
+
   console.log('hitting useAssignmentSubmissions hook', studentId, assignmentId)
   const { data: submissions } = useQuery({
-    queryKey: ['assignmentSubmissions', studentId, assignmentId],
+    queryKey,
     queryFn: () => fetchAssignmentSubmissions(studentId, assignmentId),
     enabled: !!studentId && !!assignmentId
   });
-  console.log('submissions', submissions)
+
+  useEffect(() => {
+    if (studentId && assignmentId) {
+      const submissionsRef = collection(db, 'students', studentId, 'assignments', assignmentId, 'submissions');
+      const submissionsQuery = query(submissionsRef, orderBy('createdAt', 'desc'));
+      const unsubscribe = onSnapshot(submissionsQuery, (snapshot) => {
+        const submissions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        queryClient.setQueryData(queryKey, submissions);
+      });
+      return () => unsubscribe();
+    }
+  }, [studentId, assignmentId, queryClient]);
+
   return { submissions };
 }
 
@@ -184,8 +187,7 @@ export const useAssignmentsAwaitingReview = () => {
   return { assignments };
 }
 
-export const useStudentsWithAssignmentsAwaitingReview = () => {
-  const { students } = useStudents({ active: true });
+export const useStudentsWithAssignmentsAwaitingReview = (students) => {
   const { assignments } = useAssignmentsAwaitingReview();
   const studentsWithAssignments = useMemo(() => {
     return students.map(student => {

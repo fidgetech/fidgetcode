@@ -1,24 +1,34 @@
 import { useState, useMemo } from 'react';
+import { Formik, Form, FieldArray } from 'formik';
 import { Alert, Box, Typography, List, ListItem, ListItemText, MenuItem, FormControl, Select, Button } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { NoteField } from 'shared/NoteField';
 import { useFirestoreSubmit } from 'hooks/useFirestoreSubmit';
 import { serverTimestamp } from 'firebase/firestore';
 import { useAssignmentSubmissions } from 'hooks/useTeacherData';
 import Loading from 'components/Layout/Loading';
+import { TextAreaInput, SelectInput } from 'shared/Inputs.jsx';
+
+const generateInitialValues = (objectives) => {
+  let initialValues = { note: '', objectives: {} };
+  objectives.forEach(objective => {
+    initialValues.objectives[objective.number] = '';
+  });
+  return initialValues;
+};
+
+const selectOptions = [
+  { value: 'none', label: 'Does not meet this standard yet' },
+  { value: 'some', label: 'Meets standard some of the time' },
+  { value: 'all', label: 'Meets standard all of the time' }
+];
 
 export const AssignmentReview = ({ assignment }) => {
-  const [selectedOptions, setSelectedOptions] = useState({});
-  const [note, setNote] = useState('');
+  console.log('rendering AssignmentReview')
   const theme = useTheme();
   const { loading, error, updateData } = useFirestoreSubmit();
   const [ validationError, setValidationError ] = useState(null);
   const { submissions } = useAssignmentSubmissions({ studentId: assignment.studentId, assignmentId: assignment.id });
-  const latestSubmission = useMemo(() => submissions[submissions.length -1], [submissions]);
-
-  const handleChange = (objectiveNum, event) => {
-    setSelectedOptions(prev => ({ ...prev, [objectiveNum]: event.target.value }));
-  };
+  const latestSubmission = useMemo(() => submissions[0], [submissions]);
 
   const getBackgroundColor = (value) => {
     switch (value) {
@@ -28,25 +38,28 @@ export const AssignmentReview = ({ assignment }) => {
     }
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleSubmit = async (values, { setSubmitting }) => {
+    console.log(values)
     setValidationError(null);
-    const data = new FormData(event.currentTarget);
-    if (!note || Object.keys(selectedOptions).length !== assignment.objectives.length) {
+    const { objectives, note } = values;
+    if (!note || Object.keys(objectives).some(key => !objectives[key])) {
       setValidationError('Please fill out all fields');
       return;
     }
+    const status = Object.values(objectives).every(value => value === 'all') ? 'pass' : 'fail';
     const docPath = ['students', assignment.studentId, 'assignments', assignment.id, 'submissions', latestSubmission.id];
     const updatedSubmission = {
       ...latestSubmission,
       review: {
-        objectives: selectedOptions,
+        objectives,
         note,
+        status,
         reviewedAt: serverTimestamp(),
       },
     };
     await updateData(docPath, updatedSubmission);
     console.log('Review submitted:', updatedSubmission);
+    setSubmitting(false);
   }
 
   if (loading) {
@@ -54,39 +67,41 @@ export const AssignmentReview = ({ assignment }) => {
   }
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-      {(error || validationError) && <Alert severity="error" sx={{ my: 2 }}>{error?.message || validationError}</Alert>}
-      <Typography variant='h5' gutterBottom>Review Submission</Typography>
-      <List>
-        {assignment.objectives.map((objective) => (
-          <ListItem key={objective.number} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <ListItemText primary={objective.content} />
-            <FormControl sx={{ m: 1, minWidth: 300 }}>
-              <Select
-                value={selectedOptions[objective.number] || ''}
-                onChange={(event) => handleChange(objective.number, event)}
-                displayEmpty
-                inputProps={{ 'aria-label': 'Without label' }}
-                sx={{ backgroundColor: getBackgroundColor(selectedOptions[objective.number]) }}
-              >
-                <MenuItem value='none'><em>Does not meet this standard yet</em></MenuItem>
-                <MenuItem value='some'><em>Meets standard some of the time</em></MenuItem>
-                <MenuItem value='all'><em>Meets standard all of the time</em></MenuItem>
-              </Select>
-            </FormControl>
-          </ListItem>
-        ))}
-      </List>
-      <NoteField label='Note to student (supports markdown)' onChange={(e) => setNote(e.target.value)} />
-      <Button
-        type="submit"
-        fullWidth
-        variant="contained"
-        sx={{ mt: 3, mb: 2 }}
-        disabled={!note || Object.keys(selectedOptions).length !== assignment.objectives.length}
-      >
-        Submit review
-      </Button>
-    </Box>
+    <Formik initialValues={generateInitialValues(assignment.objectives)} onSubmit={handleSubmit}>
+      {({ isSubmitting, values }) => (
+        <Form sx={{ mt: 1 }}>
+          {(error || validationError) && <Alert severity="error" sx={{ my: 2 }}>{error?.message || validationError}</Alert>}
+          <Typography variant='h5' gutterBottom>Review Submission</Typography>
+
+          <List>
+            <FieldArray name="objectives">
+              {() => (
+                <>
+                  {assignment.objectives.map((objective) => (
+                    <ListItem key={objective.number} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <ListItemText primary={objective.content} />
+                      <FormControl sx={{ m: 1, minWidth: 300 }}>
+                        <SelectInput
+                          name={`objectives[${objective.number}]`}
+                          options={selectOptions}
+                          displayEmpty
+                          inputProps={{ 'aria-label': 'Score' }}
+                          required={true}
+                          sx={{ backgroundColor: getBackgroundColor(values.objectives[objective.number]) }}
+                        />
+                      </FormControl>
+                    </ListItem>
+                  ))}
+                </>
+              )}
+            </FieldArray>
+          </List>
+          <TextAreaInput name='note' label='Note to student (supports markdown)' rows={4} required={true} />
+          <Button type='submit' variant='contained' fullWidth sx={{ mt: 3, mb: 2 }} disabled={isSubmitting}>
+            Submit review
+          </Button>
+        </Form>
+      )}
+    </Formik>
   );
 }

@@ -3,8 +3,9 @@ import { List, ListItem, ListItemText, ListItemButton } from '@mui/material';
 import pluralize from 'pluralize';
 import { useStudents, useTrackStudents, useStudentsWithAssignmentsAwaitingReview } from 'hooks/useTeacherData';
 
-export const StudentsList = ({ trackId, withAssignments }) => {
-  const { students } = withAssignments ? useStudentsWithAssignmentsAwaitingReview() : trackId ? useTrackStudents({ trackId }) : useStudents({ active: true });
+export const StudentsList = ({ trackId }) => {
+  const { students: allStudents } = trackId ? useTrackStudents({ trackId }) : useStudents({ active: true });
+  const { students } = useStudentsWithAssignmentsAwaitingReview(allStudents);
 
   return (
     <List>

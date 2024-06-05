@@ -9,12 +9,14 @@ import { useDialog } from 'contexts/DialogContext';
 import { AssignmentContent } from 'student/Assignment/AssignmentContent';
 
 const statusMapping = {
-  submitted: 'Awaiting teacher review',
   assigned: 'Awaiting student submission',
-  reviewed: 'Reviewed',
+  submitted: 'Awaiting teacher review',
+  fail: 'Awaiting resubmission',
+  pass: 'Meets expectations',
 };
 
 export const AssignmentHandler = () => {
+  console.log('rendering AssignmentHandler')
   const { courseSlug, studentId, assignmentId } = useParams();
   const { student } = useStudent({ studentId });
   const { trackId } = student;

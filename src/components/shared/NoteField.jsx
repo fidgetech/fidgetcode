@@ -1,6 +1,6 @@
 import { TextField } from '@mui/material';
 
-export const NoteField = ({ label, onChange }) => {
+export const NoteField = ({ label, onChange, required }) => {
   return (
     <TextField
       multiline
@@ -12,6 +12,7 @@ export const NoteField = ({ label, onChange }) => {
       label={label}
       autoComplete="off"
       onChange={onChange}
+      required={required}
     />
   );
 }

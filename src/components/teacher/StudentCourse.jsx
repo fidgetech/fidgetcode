@@ -5,6 +5,13 @@ import { useCourse } from 'hooks/useStudentData';
 import { useStudent, useCourseAssignmentTemplatesWithAssignments } from 'hooks/useTeacherData';
 import { List, ListItem, ListItemButton, ListItemText, Typography } from '@mui/material';
 
+const statusMapping = {
+  assigned: 'Awaiting student submission',
+  submitted: 'Awaiting teacher review',
+  fail: 'Awaiting resubmission',
+  pass: 'Meets expectations',
+};
+
 export const StudentCourse = () => {
   const { studentId, courseSlug } = useParams();
   const { student } = useStudent({ studentId });
@@ -24,7 +31,7 @@ export const StudentCourse = () => {
               component={RouterLink}
               to={template.studentAssignment ? `assignments/${template.studentAssignment.id}` : `templates/${template.id}`}
             >
-              <ListItemText primary={template.title} secondary={template.status} />
+              <ListItemText primary={template.title} secondary={statusMapping[template.studentAssignment?.status] || 'Not assigned'} />
             </ListItemButton>
           </ListItem>
         ))}
