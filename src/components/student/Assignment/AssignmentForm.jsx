@@ -12,6 +12,7 @@ export const AssignmentForm = ({ assignment }) => {
   const { currentUser } = useAuth();
   const { loading, error, createData } = useFirestoreSubmit();
   const [ validationError, setValidationError ] = useState(null);
+  const [ submitted, setSubmitted ] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -33,14 +34,23 @@ export const AssignmentForm = ({ assignment }) => {
     });
     if (submissionId) {
       console.log('Submission created with ID:', submissionId);
+      setSubmitted(true);
       setTimeout(() => {
         queryClient.invalidateQueries(['assignment', currentUser.uid, assignment.id]);
-      }, 1000);    
+      }, 1000);
     }
   };
 
   if (loading) {
     return <Loading text='Please wait...' />;
+  }
+
+  if (submitted) {
+    return (
+      <Alert severity="success" sx={{ my: 2 }}>
+        Your project has been submitted and is awaiting review.
+      </Alert>
+    );
   }
 
   return (

@@ -7,6 +7,7 @@ import { serverTimestamp } from 'firebase/firestore';
 import { useAssignmentSubmissions } from 'hooks/useTeacherData';
 import Loading from 'components/Layout/Loading';
 import { TextAreaInput, SelectInput } from 'shared/Inputs.jsx';
+import { set } from 'firebase/database';
 
 const generateInitialValues = (objectives) => {
   let initialValues = { note: '', objectives: {} };
@@ -27,6 +28,7 @@ export const AssignmentReview = ({ assignment }) => {
   const theme = useTheme();
   const { loading, error, updateData } = useFirestoreSubmit();
   const [ validationError, setValidationError ] = useState(null);
+  const [ submitted, setSubmitted ] = useState(false);
   const { submissions } = useAssignmentSubmissions({ studentId: assignment.studentId, assignmentId: assignment.id });
   const latestSubmission = useMemo(() => submissions[0], [submissions]);
 
@@ -60,10 +62,19 @@ export const AssignmentReview = ({ assignment }) => {
     await updateData(docPath, updatedSubmission);
     console.log('Review submitted:', updatedSubmission);
     setSubmitting(false);
+    setSubmitted(true);
   }
 
   if (loading) {
     return <Loading text='Please wait...' />;
+  }
+
+  if (submitted) {
+    return (
+      <Alert severity="success" sx={{ my: 2 }}>
+        Awaiting resubmission
+      </Alert>
+    );
   }
 
   return (

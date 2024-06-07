@@ -179,11 +179,25 @@ export const useStudentAssignmentsAwaitingReview = ({ studentId }) => {
 }
 
 export const useAssignmentsAwaitingReview = () => {
+  const queryClient = useQueryClient();
+  const queryKey = ['assignmentsAwaitingReview'];
+
   const { data: assignments } = useQuery({
-    queryKey: ['assignmentsAwaitingReview'],
+    queryKey,
     queryFn: () => fetchAssignmentsAwaitingReview(),
     enabled: true
   });
+
+  useEffect(() => {
+    const assignmentsRef = collectionGroup(db, 'assignments');
+    const assignmentsQuery = query(assignmentsRef, where('status', '==', 'submitted'));
+    const unsubscribe = onSnapshot(assignmentsQuery, (snapshot) => {
+      const assignments = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      queryClient.setQueryData(['assignmentsAwaitingReview'], assignments);
+    });
+    return () => unsubscribe();
+  }, [queryClient]);
+
   return { assignments };
 }
 
