@@ -8,11 +8,10 @@ import { queryClient } from 'lib/queryClient';
 import DOMPurify from 'dompurify';
 import { NoteField } from 'shared/NoteField';
 
-export const AssignmentForm = ({ assignment }) => {
+export const AssignmentForm = ({ assignment, setAssignmentStatus }) => {
   const { currentUser } = useAuth();
   const { loading, error, createData } = useFirestoreSubmit();
   const [ validationError, setValidationError ] = useState(null);
-  const [ submitted, setSubmitted ] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -34,7 +33,7 @@ export const AssignmentForm = ({ assignment }) => {
     });
     if (submissionId) {
       console.log('Submission created with ID:', submissionId);
-      setSubmitted(true);
+      setAssignmentStatus('submitted');
       setTimeout(() => {
         queryClient.invalidateQueries(['assignment', currentUser.uid, assignment.id]);
       }, 1000);
@@ -43,14 +42,6 @@ export const AssignmentForm = ({ assignment }) => {
 
   if (loading) {
     return <Loading text='Please wait...' />;
-  }
-
-  if (submitted) {
-    return (
-      <Alert severity="success" sx={{ my: 2 }}>
-        Your project has been submitted and is awaiting review.
-      </Alert>
-    );
   }
 
   return (

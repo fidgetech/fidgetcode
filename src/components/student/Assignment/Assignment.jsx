@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { AssignmentContent } from './AssignmentContent';
 import { AssignmentForm } from './AssignmentForm';
 import { Divider, Alert, Box } from '@mui/material';
@@ -43,8 +44,12 @@ export const Assignment = () => {
   const { currentUser } = useAuth();
   const { assignmentId } = useParams();
   const { assignment } = useAssignment({ studentId: currentUser.uid, assignmentId });
+  const [ assignmentStatus, setAssignmentStatus ] = useState(assignment.status);
+  const [ statusConfig, setStatusConfig ] = useState(statusMapping[assignmentStatus]);
 
-  const statusConfig = statusMapping[assignment.status];
+  useEffect(() => {
+    setStatusConfig(statusMapping[assignmentStatus]);
+  }, [assignmentStatus]);
 
   return (
     <>
@@ -64,7 +69,7 @@ export const Assignment = () => {
 
       {statusConfig.showForm &&
         <Box marginY={4}>
-          <AssignmentForm assignment={assignment} />
+          <AssignmentForm assignment={assignment} setAssignmentStatus={setAssignmentStatus} />
         </Box>
       }
     </>

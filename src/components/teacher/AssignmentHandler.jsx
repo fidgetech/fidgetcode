@@ -1,11 +1,11 @@
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useCourse } from 'hooks/useStudentData';
-import { useStudent, assignAssignmentToStudent } from 'hooks/useTeacherData';
+import { useStudent } from 'hooks/useTeacherData';
 import { useAssignment } from 'hooks/useStudentData';
 import { AssignmentSubmissions } from './AssignmentSubmissions';
 import { AssignmentReview } from './AssignmentReview';
-import { Button, Typography, Divider, Alert } from '@mui/material';
-import { useDialog } from 'contexts/DialogContext';
+import { Typography, Divider, Alert } from '@mui/material';
 import { AssignmentContent } from 'student/Assignment/AssignmentContent';
 
 const statusMapping = {
@@ -22,7 +22,12 @@ export const AssignmentHandler = () => {
   const { trackId } = student;
   const { course } = useCourse({ trackId, courseSlug });
   const { assignment } = useAssignment({ studentId, assignmentId });
-  const statusConfig = statusMapping[assignment.status];
+  const [ assignmentStatus, setAssignmentStatus ] = useState(assignment.status);
+  const [ statusConfig, setStatusConfig ] = useState(statusMapping[assignmentStatus]);
+
+  useEffect(() => {
+    setStatusConfig(statusMapping[assignmentStatus]);
+  }, [assignmentStatus]);
 
   return (
     <>
@@ -44,7 +49,7 @@ export const AssignmentHandler = () => {
           {assignment.status === 'submitted' &&
             <>
               <Divider sx={{ my: 4 }} />
-              <AssignmentReview assignment={assignment} />
+              <AssignmentReview assignment={assignment} setAssignmentStatus={setAssignmentStatus} />
             </>
           }
         </>

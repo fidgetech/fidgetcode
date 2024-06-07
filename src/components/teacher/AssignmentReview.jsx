@@ -1,13 +1,12 @@
 import { useState, useMemo } from 'react';
 import { Formik, Form, FieldArray } from 'formik';
-import { Alert, Box, Typography, List, ListItem, ListItemText, MenuItem, FormControl, Select, Button } from '@mui/material';
+import { Alert, Typography, List, ListItem, ListItemText, MenuItem, FormControl, Select, Button } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useFirestoreSubmit } from 'hooks/useFirestoreSubmit';
 import { serverTimestamp } from 'firebase/firestore';
 import { useAssignmentSubmissions } from 'hooks/useTeacherData';
 import Loading from 'components/Layout/Loading';
 import { TextAreaInput, SelectInput } from 'shared/Inputs.jsx';
-import { set } from 'firebase/database';
 
 const generateInitialValues = (objectives) => {
   let initialValues = { note: '', objectives: {} };
@@ -23,12 +22,11 @@ const selectOptions = [
   { value: 'all', label: 'Meets standard all of the time' }
 ];
 
-export const AssignmentReview = ({ assignment }) => {
+export const AssignmentReview = ({ assignment, setAssignmentStatus }) => {
   console.log('rendering AssignmentReview')
   const theme = useTheme();
   const { loading, error, updateData } = useFirestoreSubmit();
   const [ validationError, setValidationError ] = useState(null);
-  const [ submitted, setSubmitted ] = useState(false);
   const { submissions } = useAssignmentSubmissions({ studentId: assignment.studentId, assignmentId: assignment.id });
   const latestSubmission = useMemo(() => submissions[0], [submissions]);
 
@@ -62,19 +60,11 @@ export const AssignmentReview = ({ assignment }) => {
     await updateData(docPath, updatedSubmission);
     console.log('Review submitted:', updatedSubmission);
     setSubmitting(false);
-    setSubmitted(true);
+    setAssignmentStatus('submitted');
   }
 
   if (loading) {
     return <Loading text='Please wait...' />;
-  }
-
-  if (submitted) {
-    return (
-      <Alert severity="success" sx={{ my: 2 }}>
-        Awaiting resubmission
-      </Alert>
-    );
   }
 
   return (
