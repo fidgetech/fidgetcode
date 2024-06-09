@@ -1,5 +1,5 @@
 import Markdown from 'react-markdown';
-import { List, ListItem, ListItemText, Typography } from '@mui/material';
+import { List, ListItem, ListItemText, Typography, Box, Divider } from '@mui/material';
 
 export const AssignmentContent = ({ assignment, includeContent=true }) => {
   const { title, content, objectives } = assignment;
@@ -11,14 +11,17 @@ export const AssignmentContent = ({ assignment, includeContent=true }) => {
 
       {includeContent && <Markdown>{content}</Markdown>}
 
-      <Typography variant='h5' sx={{ mt: 4 }}>Objectives</Typography>
-      <List>
-        {sortedObjectives?.map(objective => (
-          <ListItem key={objective.number} disablePadding>
-            <ListItemText primary={objective.content} />
-          </ListItem>
-        ))}
-      </List>
+      <Divider sx={{ my: 4 }} />
+      <Box border={1} padding={4}>
+        <Typography variant='h5'>Objectives</Typography>
+        <List>
+          {sortedObjectives?.map(objective => (
+            <ListItem key={objective.number} disablePadding>
+              <ListItemText primary={objective.content} />
+            </ListItem>
+          ))}
+        </List>
+      </Box>
     </>
   );
 }

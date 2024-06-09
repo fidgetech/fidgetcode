@@ -53,15 +53,15 @@ export const Assignment = () => {
 
   return (
     <>
-      <AssignmentContent assignment={assignment} includeContent={statusConfig.showContent} />
-
-      <Divider sx={{ my: 4 }} />
-
       {statusConfig.showAlert &&
         <Alert severity={statusConfig.style} sx={{ my: 4 }}>
           {statusConfig.message}
         </Alert>
       }
+
+      <AssignmentContent assignment={assignment} includeContent={statusConfig.showContent} />
+
+      <Divider sx={{ my: 4 }} />
 
       {statusConfig.showSubmissions &&
         <AssignmentSubmissions assignment={assignment} />

@@ -14,7 +14,7 @@ export const TracksList = () => {
         <ListItem key={track.id} disablePadding>
           <ListItemButton component={RouterLink} to={`tracks/${track.id}`}>
             <ListItemText
-              primary={track.title}
+              primary={`${track.title} - ${track.syllabus}`}
               secondary={`${track.students.length} ${pluralize('student', track.students.length)}`}
             />
           </ListItemButton>
