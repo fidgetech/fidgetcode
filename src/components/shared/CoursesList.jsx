@@ -1,9 +1,9 @@
 import { Link as RouterLink } from 'react-router-dom';
 import { List, ListItem, ListItemText, ListItemButton } from '@mui/material';
-import { useCourses } from 'hooks/useStudentData';
+import { useCourses, useStudentCoursesWithAssignments } from 'hooks/useStudentData';
 
-export const CoursesList = ({ trackId }) => {
-  const { courses } = useCourses({ trackId });
+export const CoursesList = ({ trackId, studentId }) => {
+  const { courses } = studentId ? useStudentCoursesWithAssignments({ trackId, studentId }) : useCourses({ trackId });
 
   return (
     <List>

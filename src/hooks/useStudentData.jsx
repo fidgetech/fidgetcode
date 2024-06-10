@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { db } from 'services/firebase.js';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { collection, doc, getDoc, getDocs, query, orderBy, where, onSnapshot } from 'firebase/firestore';
@@ -114,6 +114,29 @@ export const useStudentCourseAssignments = ({ studentId, courseId }) => {
 
   return { assignments };
 }
+
+export const useStudentCoursesWithAssignments = ({ studentId, trackId }) => {
+  const { courses } = useCourses({ trackId });
+  const [assignmentsByCourse, setAssignmentsByCourse] = useState({});
+
+  useEffect(() => {
+    const fetchAssignments = async () => {
+      const newAssignmentsByCourse = {};
+      for (const course of courses) {
+        const assignments = await fetchStudentCourseAssignments(studentId, course.id);
+        newAssignmentsByCourse[course.id] = assignments;
+      }
+      setAssignmentsByCourse(newAssignmentsByCourse);
+    };
+    fetchAssignments();
+  }, [courses, studentId]);
+
+  const filteredCourses = useMemo(() => {
+    return courses.filter(course => assignmentsByCourse[course.id]?.length > 0);
+  }, [courses, assignmentsByCourse]);
+
+  return { courses: filteredCourses };
+};
 
 export const useAssignment = ({ studentId, assignmentId }) => {
   const queryClient = useQueryClient();

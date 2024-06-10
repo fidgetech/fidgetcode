@@ -6,13 +6,13 @@ import { CoursesList } from 'shared/CoursesList';
 import { Typography } from '@mui/material';
 
 export const Courses = () => {
-  const { currentUser: { trackId } } = useAuth();
+  const { currentUser: { trackId, uid } } = useAuth();
   const { track } = useTrack({ trackId });
 
   return (
     <>
       <Typography variant='h4'>{track.title}</Typography>
-      <CoursesList trackId={trackId} />
+      <CoursesList trackId={trackId} studentId={uid} />
     </>
   );
 };
