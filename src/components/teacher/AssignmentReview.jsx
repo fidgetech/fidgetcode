@@ -60,7 +60,7 @@ export const AssignmentReview = ({ assignment, setAssignmentStatus }) => {
     await updateData(docPath, updatedSubmission);
     console.log('Review submitted:', updatedSubmission);
     setSubmitting(false);
-    setAssignmentStatus('submitted');
+    setAssignmentStatus(status);
   }
 
   if (loading) {
