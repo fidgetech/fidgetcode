@@ -1,24 +1,30 @@
 'use strict';
 
-const functions = require('firebase-functions');
-const admin = require('firebase-admin');
-const { sendEmail } = require('./email');
+import { logger } from 'firebase-functions/v2';
+import { onDocumentWritten } from 'firebase-functions/v2/firestore';
+import { getFirestore } from 'firebase-admin/firestore';
+import { initializeApp, getApps } from 'firebase-admin/app';
+import { sendEmail } from './email.js';
 
-admin.initializeApp();
+if (!getApps().length) initializeApp();
 
-exports.updateAssignmentStatus = functions.firestore
-  .document('students/{studentId}/assignments/{assignmentId}/submissions/{submissionId}')
-  .onWrite(async (change, context) => {
-    const { studentId, assignmentId } = context.params;
-    const submissionData = change.after.exists ? change.after.data() : null;
-    if (!submissionData) { return; }
+export const updateAssignmentStatus = onDocumentWritten(
+  'students/{studentId}/assignments/{assignmentId}/submissions/{submissionId}',
+  async (event) => {
+    const { studentId, assignmentId } = event.params;
+    const change = event.data;
+    const submissionData = change?.after.exists ? change.after.data() : null;
+    if (!submissionData) return;
+
     const status = submissionData.review?.status || 'submitted';
-    const assignmentRef = admin.firestore().doc(`students/${studentId}/assignments/${assignmentId}`);
+    const db = getFirestore();
+    const assignmentRef = db.doc(`students/${studentId}/assignments/${assignmentId}`);
+
     try {
       await assignmentRef.update({ status });
-      functions.logger.info('Assignment status updated successfully');
+      logger.info('Assignment status updated successfully');
       if (status !== 'submitted') {
-        const studentRef = admin.firestore().doc(`students/${studentId}`);
+        const studentRef = db.doc(`students/${studentId}`);
         const studentDoc = await studentRef.get();
         const studentData = studentDoc.data();
         const assignmentDoc = await assignmentRef.get();
@@ -31,6 +37,7 @@ exports.updateAssignmentStatus = functions.firestore
         await sendEmail(emailData);
       }
     } catch (error) {
-      functions.logger.error('Error updating assignment status', error);
+      logger.error('Error updating assignment status', error);
     }
-  });
+  }
+);

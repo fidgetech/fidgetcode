@@ -2,8 +2,12 @@
 
 ### Configuration
 
-Run `bash update-github-secrets.sh` to copy env vars to GitHub Secrets for production
+- Set secrets in `.env` and `functions/.env` per respective `.env.example` files.
+- Run `bash update-github-secrets.sh` to copy env vars to GitHub Secrets for production.
+- Run `firebase deploy --only functions` to deploy firebase functions, including env vars.
 
 ### Deployment
 
-Deploys automatically on merge to main branch.
+Deploy front-end: deploys automatically on merge to main branch
+
+Deploy back-end: `firebase deploy --only functions`
