@@ -7,6 +7,7 @@ import { AssignmentSubmissions } from './AssignmentSubmissions';
 import { AssignmentReview } from './AssignmentReview';
 import { Typography, Divider, Alert } from '@mui/material';
 import { AssignmentContent } from 'student/Assignment/AssignmentContent';
+import { useBreadcrumbs } from 'contexts/BreadcrumbsContext';
 
 const statusMapping = {
   assigned: { style: 'info', message: 'Awaiting student submission' },
@@ -28,6 +29,17 @@ export const AssignmentHandler = () => {
   useEffect(() => {
     setStatusConfig(statusMapping[assignmentStatus]);
   }, [assignmentStatus]);
+
+  const { setBreadcrumbs } = useBreadcrumbs();
+  useEffect(() => {
+    setBreadcrumbs([
+      { path: '/teacher', label: 'Home' },
+      { path: `/teacher/tracks/${trackId}`, label: 'Track' },
+      { path: `/teacher/tracks/${trackId}/courses/${courseSlug}`, label: course.title },
+      { path: `/teacher/tracks/${trackId}/courses/${courseSlug}/students/${studentId}`, label: student.name },
+      { path: `/teacher/tracks/${trackId}/courses/${courseSlug}/students/${studentId}/assignments/${assignmentId}`, label: assignment.title }
+    ]);
+  }, [setBreadcrumbs]);
 
   return (
     <>

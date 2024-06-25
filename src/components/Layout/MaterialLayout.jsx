@@ -3,6 +3,7 @@ import { useCustomTheme } from 'contexts/ThemeContext';
 import { rootStyle } from 'themes/LayoutStyles';
 import { StyledPaper } from './SharedStyles';
 import { Navbar, StaticNavbar } from './Navbar';
+import CustomBreadcrumbs from './Breadcrumbs';
 
 export default function MaterialLayout({ children, staticNavbar=false }) {
   const { theme } = useCustomTheme();
@@ -17,6 +18,7 @@ export default function MaterialLayout({ children, staticNavbar=false }) {
         <main>
           <Box sx={{ my: { xs: 0, sm: 2 } }}>
             <StyledPaper>
+              <CustomBreadcrumbs />
               {children}
             </StyledPaper>
           </Box>

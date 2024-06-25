@@ -17,6 +17,7 @@ import { Notification } from 'components/Layout/Notification';
 import { studentRoutes } from 'student/routes';
 import { teacherRoutes } from 'teacher/routes';
 import { DialogProvider } from 'contexts/DialogContext';
+import { BreadcrumbsProvider } from 'contexts/BreadcrumbsContext';
 
 export default function App() {
   const router = createBrowserRouter([
@@ -48,15 +49,17 @@ export default function App() {
   ]);
 
   return (
-    <ThemeProviderWrapper>
-      <NotificationProvider>
-        <QueryClientProvider client={queryClient}>
-          <AuthProvider>
-            <RouterProvider router={router} />
-          </AuthProvider>
-        </QueryClientProvider>
-      </NotificationProvider>
-    </ThemeProviderWrapper>
+    <BreadcrumbsProvider>
+      <ThemeProviderWrapper>
+        <NotificationProvider>
+          <QueryClientProvider client={queryClient}>
+            <AuthProvider>
+              <RouterProvider router={router} />
+            </AuthProvider>
+          </QueryClientProvider>
+        </NotificationProvider>
+      </ThemeProviderWrapper>
+    </BreadcrumbsProvider>
   )
 }
 

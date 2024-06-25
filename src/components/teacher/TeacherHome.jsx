@@ -4,6 +4,8 @@ import { useStudents, useStudentAssignmentsAwaitingReview } from 'hooks/useTeach
 import { localeOptions } from 'utils/helpers';
 import { StudentsList } from './StudentsList';
 import { TracksList } from './TracksList';
+import { useEffect } from 'react';
+import { useBreadcrumbs } from 'contexts/BreadcrumbsContext';
 
 export const TeacherHome = () => {
   // const { students } = useStudents({ active: true });
@@ -12,6 +14,11 @@ export const TeacherHome = () => {
   //   const { assignments } = useStudentAssignmentsAwaitingReview({ studentId: student.id });
   //   studentsWithAssignments.push({ ...student, assignments })
   // }
+
+  const { setBreadcrumbs } = useBreadcrumbs();
+  useEffect(() => {
+    setBreadcrumbs([]);
+  }, [setBreadcrumbs]);
 
   return (
     <>

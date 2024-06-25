@@ -5,14 +5,23 @@ import { useTrack } from 'hooks/useStudentData';
 import { CoursesList } from 'shared/CoursesList';
 import { StudentsList } from './StudentsList';
 import { Typography, Divider } from '@mui/material';
+import { useEffect } from 'react';
+import { useBreadcrumbs } from 'contexts/BreadcrumbsContext';
 
 export const Track = () => {
   const { trackId } = useParams();
   const { track } = useTrack({ trackId });
 
+  const { setBreadcrumbs } = useBreadcrumbs();
+  useEffect(() => {
+    setBreadcrumbs([
+      { path: '/teacher', label: 'Home' },
+      { path: `/teacher/tracks/${trackId}`, label: 'Track' }
+    ]);
+  }, [setBreadcrumbs]);
+
   return (
     <>
-      <h1>Track Overview Page</h1>
       <Typography variant='h4'>{track.title}</Typography>
       <Typography variant='body1'>Syllabus: {track.syllabus}</Typography>
 

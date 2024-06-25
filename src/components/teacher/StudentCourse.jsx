@@ -4,6 +4,8 @@ import { useParams, Link as RouterLink } from 'react-router-dom';
 import { useCourse } from 'hooks/useStudentData';
 import { useStudent, useCourseAssignmentTemplatesWithAssignments } from 'hooks/useTeacherData';
 import { List, ListItem, ListItemButton, ListItemText, Typography } from '@mui/material';
+import { useEffect } from 'react';
+import { useBreadcrumbs } from 'contexts/BreadcrumbsContext';
 
 const statusMapping = {
   assigned: 'Awaiting student submission',
@@ -18,6 +20,16 @@ export const StudentCourse = () => {
   const { trackId } = student;
   const { course } = useCourse({ trackId, courseSlug });
   const { assignmentTemplatesWithAssignments } = useCourseAssignmentTemplatesWithAssignments({ studentId, trackId, courseId: course.id });
+
+  const { setBreadcrumbs } = useBreadcrumbs();
+  useEffect(() => {
+    setBreadcrumbs([
+      { path: '/teacher', label: 'Home' },
+      { path: `/teacher/tracks/${trackId}`, label: 'Track' },
+      { path: `/teacher/tracks/${trackId}/courses/${courseSlug}`, label: course.title },
+      { path: `/teacher/tracks/${trackId}/courses/${courseSlug}/students/${studentId}`, label: student.name }
+    ]);
+  }, [setBreadcrumbs]);
 
   return (
     <>

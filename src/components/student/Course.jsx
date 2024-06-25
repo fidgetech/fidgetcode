@@ -2,6 +2,8 @@ import { useParams, Link as RouterLink } from 'react-router-dom';
 import { useAuth } from 'contexts/AuthContext';
 import { useCourse, useStudentCourseAssignments } from 'hooks/useStudentData';
 import { List, ListItem, ListItemText, ListItemButton } from '@mui/material';
+import { useEffect } from 'react';
+import { useBreadcrumbs } from 'contexts/BreadcrumbsContext';
 
 const statusMapping = {
   assigned: 'Not yet submitted',
@@ -16,6 +18,14 @@ export const Course = () => {
   const { courseSlug } = useParams();
   const { course } = useCourse({ trackId, courseSlug });
   const { assignments } = useStudentCourseAssignments({ studentId: currentUser.uid, courseId: course.id });
+
+  const { setBreadcrumbs } = useBreadcrumbs();
+  useEffect(() => {
+    setBreadcrumbs([
+      { path: '/student', label: 'Home' },
+      { path: `/student/courses/${courseSlug}`, label: course.title },
+    ]);
+  }, [setBreadcrumbs]);
 
   return (
     <>

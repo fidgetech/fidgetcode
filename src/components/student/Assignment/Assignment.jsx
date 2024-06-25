@@ -3,9 +3,10 @@ import { AssignmentContent } from './AssignmentContent';
 import { AssignmentForm } from './AssignmentForm';
 import { Divider, Alert, Box } from '@mui/material';
 import { useParams } from 'react-router-dom';
-import { useAssignment } from 'hooks/useStudentData';
+import { useAssignment, useCourse } from 'hooks/useStudentData';
 import { useAuth } from 'contexts/AuthContext';
 import { AssignmentSubmissions } from 'teacher/AssignmentSubmissions';
+import { useBreadcrumbs } from 'contexts/BreadcrumbsContext';
 
 const statusMapping = {
   'assigned': {
@@ -42,7 +43,9 @@ const statusMapping = {
 
 export const Assignment = () => {
   const { currentUser } = useAuth();
-  const { assignmentId } = useParams();
+  const { trackId } = currentUser;
+  const { courseSlug, assignmentId } = useParams();
+  const { course } = useCourse({ trackId, courseSlug });
   const { assignment } = useAssignment({ studentId: currentUser.uid, assignmentId });
   const [ assignmentStatus, setAssignmentStatus ] = useState(assignment.status);
   const [ statusConfig, setStatusConfig ] = useState(statusMapping[assignmentStatus]);
@@ -50,6 +53,15 @@ export const Assignment = () => {
   useEffect(() => {
     setStatusConfig(statusMapping[assignmentStatus]);
   }, [assignmentStatus]);
+
+  const { setBreadcrumbs } = useBreadcrumbs();
+  useEffect(() => {
+    setBreadcrumbs([
+      { path: '/student', label: 'Home' },
+      { path: `/student/courses/${courseSlug}`, label: course.title },
+      { path: `/student/courses/${courseSlug}/assignments/${assignmentId}`, label: assignment.title },
+    ]);
+  }, [setBreadcrumbs]);
 
   return (
     <>
