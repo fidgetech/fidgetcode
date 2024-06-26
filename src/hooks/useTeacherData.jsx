@@ -216,6 +216,12 @@ export const useStudentsWithAssignmentsAwaitingReview = ({ students, courseId })
   return { students: studentsWithAssignments };
 }
 
+export const useStudentWithAssignmentsAwaitingReview = ({ studentId, courseId }) => {
+  const { student } = useStudent({ studentId });
+  const { students } = useStudentsWithAssignmentsAwaitingReview({ students: [student], courseId });
+  return { student: students[0] };
+}
+
 export const useTracksWithStudents = () => {
   const { tracks } = useTracks();
   const { students } = useStudents({ active: true });
@@ -246,7 +252,7 @@ export const assignAssignmentToStudent = async ({ studentId, trackId, courseId, 
   const templateDoc = await getDoc(templateRef);
   if (!templateDoc.exists) throw new Error('Assignment template not found');
   const template = { id: templateDoc.id, ...templateDoc.data() };
-  const { title, content, objectives, number } = template;
+  const { title, content, objectives, number, courseSlug } = template;
   const assignmentData = {
     createdAt: serverTimestamp(),
     status: 'assigned',
@@ -257,6 +263,7 @@ export const assignAssignmentToStudent = async ({ studentId, trackId, courseId, 
     content,
     objectives,
     number,
+    courseSlug,
   };
   const assignmentsRef = collection(db, 'students', studentId, 'assignments');
   const existingAssignmentExists  = query(assignmentsRef, where('templateId', '==', templateId));
