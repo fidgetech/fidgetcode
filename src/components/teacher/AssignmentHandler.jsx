@@ -5,7 +5,7 @@ import { useStudent } from 'hooks/useTeacherData';
 import { useAssignment } from 'hooks/useStudentData';
 import { AssignmentSubmissions } from './AssignmentSubmissions';
 import { AssignmentReview } from './AssignmentReview';
-import { Typography, Divider, Alert } from '@mui/material';
+import { Typography, Divider, Alert, Button } from '@mui/material';
 import { AssignmentContent } from 'student/Assignment/AssignmentContent';
 import { useBreadcrumbs } from 'contexts/BreadcrumbsContext';
 
@@ -54,15 +54,20 @@ export const AssignmentHandler = () => {
 
       <AssignmentContent assignment={assignment} />
 
-      {assignment.status &&
+      {assignmentStatus &&
         <>
           <Divider sx={{ my: 4 }} />
           <AssignmentSubmissions assignment={assignment} />
-          {assignment.status === 'submitted' &&
+          {assignmentStatus === 'submitted' &&
             <>
               <Divider sx={{ my: 4 }} />
               <AssignmentReview assignment={assignment} setAssignmentStatus={setAssignmentStatus} />
             </>
+          }
+          {(assignmentStatus === 'fail' || assignmentStatus === 'pass') &&
+            <Button variant='contained' color='error' sx={{ my: 2}} onClick={() => setAssignmentStatus('submitted')}>
+              Redo review
+            </Button>
           }
         </>
       }
