@@ -83,7 +83,7 @@ const SubmissionNotes = ({ assignment, submission }) => {
           <Divider />
           <Box marginY={2}>
             <Box marginY={1} sx={{ display: { sm: 'flex' }, justifyContent: { sm: 'space-between' } }}>
-              <Typography variant='body' gutterBottom sx={{ fontWeight: 'bold' }}>Teacher Review</Typography>
+              <Typography variant='body' gutterBottom sx={{ fontWeight: 'bold' }}>Reviewed by {submission.review.reviewedBy}</Typography>
               <Typography color="text.secondary" gutterBottom>
                 {submission.review.reviewedAt?.toDate()?.toLocaleString('en-US', localeOptions)}
               </Typography>

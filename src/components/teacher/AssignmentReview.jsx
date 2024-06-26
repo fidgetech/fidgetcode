@@ -7,6 +7,7 @@ import { serverTimestamp } from 'firebase/firestore';
 import { useAssignmentSubmissions } from 'hooks/useTeacherData';
 import Loading from 'components/Layout/Loading';
 import { TextAreaInput, SelectInput } from 'shared/Inputs.jsx';
+import { useAuth } from 'contexts/AuthContext';
 
 const generateInitialValues = (objectives) => {
   let initialValues = { note: '', objectives: {} };
@@ -29,6 +30,7 @@ export const AssignmentReview = ({ assignment, setAssignmentStatus }) => {
   const [ validationError, setValidationError ] = useState(null);
   const { submissions } = useAssignmentSubmissions({ studentId: assignment.studentId, assignmentId: assignment.id });
   const latestSubmission = useMemo(() => submissions[0], [submissions]);
+  const { currentUser } = useAuth();
 
   const getBackgroundColor = (value) => {
     switch (value) {
@@ -55,6 +57,7 @@ export const AssignmentReview = ({ assignment, setAssignmentStatus }) => {
         note,
         status,
         reviewedAt: serverTimestamp(),
+        reviewedBy: currentUser.name,
       },
     };
     await updateData(docPath, updatedSubmission);
