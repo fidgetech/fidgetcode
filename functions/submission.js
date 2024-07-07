@@ -32,7 +32,7 @@ export const updateAssignmentStatus = onDocumentWritten(
         const emailData = {
           to: studentData.email,
           subject: `Independent Project reviewed: ${assignmentData.title}`,
-          body: `<p>Your Independent Project <em>${assignmentData.title}</em> has been reviewed. Please check Fidgetcode for details.</p>`
+          body: `<p>Your Independent Project <em>${assignmentData.title}</em> has been reviewed. Please check Fidgetech Code for details.</p>`
         };
         await sendEmail(emailData);
       }
