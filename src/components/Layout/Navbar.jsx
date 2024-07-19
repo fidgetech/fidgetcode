@@ -17,7 +17,7 @@ export const StaticNavbar = () => {
     <AppBar position="static">
       <Toolbar>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-          <Typography variant="h6" sx={{ padding: '6px 16px', borderRadius: '4px' }}>Fidgetech Code</Typography>
+          <Typography variant="h6" sx={{ padding: '6px 16px', borderRadius: '4px' }}>Code Central</Typography>
           <Box>
             {isSignedIn && (
               <>
@@ -58,7 +58,7 @@ export const Navbar = () => {
       <Toolbar>
 
         {/* hamburger menu for xs screns; only when logged in */}
-        <Box sx={{ flexGrow: 1, display: { xs: isSignedIn ? 'flex' : 'none', sm: 'none' } }}>
+        {/* <Box sx={{ flexGrow: 1, display: { xs: isSignedIn ? 'flex' : 'none', sm: 'none' } }}>
           <IconButton size="large" color="inherit" aria-label="open drawer" onClick={handleToggleHamburgerMenu}>
             <MenuIcon />
           </IconButton>
@@ -76,18 +76,18 @@ export const Navbar = () => {
               <Typography textAlign="center">A Menu Item</Typography>
             </MenuItem>
           </Menu>
-        </Box>
+        </Box> */}
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
           <Typography component={Link} to='/' variant="h6" color='inherit' sx={{
               textDecoration: 'none',
               padding: '6px 16px',
               borderRadius: '4px',
-              display: { xs: isSignedIn ? 'none' : 'flex', sm: 'flex' },
+              // display: { xs: isSignedIn ? 'none' : 'flex', sm: 'flex' },
               '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.08)' },
             }}
           >
-            Fidgetech Code
+            Code Central
           </Typography>
 
           <Box>

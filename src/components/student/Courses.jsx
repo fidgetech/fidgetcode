@@ -11,7 +11,8 @@ export const Courses = () => {
 
   return (
     <>
-      <Typography variant='h4'>{track.title}</Typography>
+      {/* <Typography variant='h4'>{track.title}</Typography> */}
+      <Typography variant='h4'>Courses</Typography>
       <CoursesList trackId={trackId} studentId={uid} />
     </>
   );
