@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { auth } from 'services/firebase.js';
-import { Alert, Button, Grid, Box, TextField } from '@mui/material';
+import { Typography, Alert, Button, Grid, Box, TextField } from '@mui/material';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import Loading from 'components/Layout/Loading';
 import { useNotification } from 'contexts/NotificationContext';
@@ -18,7 +18,7 @@ export default function PasswordReset({ toggleReset }) {
     const email = data.get('email');
     try {
       await sendPasswordResetEmail(auth, email);
-      setNotification('Sent password reset email');
+      setNotification('Sent password reset email. (It may take several minutes to arrive.)');
       toggleReset();
     } catch (error) {
       setLoading(false);
@@ -43,6 +43,7 @@ export default function PasswordReset({ toggleReset }) {
         autoComplete="email"
         autoFocus
       />
+      <Typography><em>Please allow several minutes for the email to arrive.</em></Typography>
       <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
         Send Reset Link
       </Button>
