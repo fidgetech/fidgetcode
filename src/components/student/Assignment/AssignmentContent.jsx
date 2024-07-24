@@ -1,22 +1,23 @@
 import { useAuth } from 'contexts/AuthContext';
 import Markdown from 'react-markdown';
-import { Link, List, ListItem, ListItemText, Typography, Box, Divider } from '@mui/material';
+import { Link, List, ListItem, ListItemText, Typography, Box, Divider, Button } from '@mui/material';
 
 export const AssignmentContent = ({ assignment, includeContent=true }) => {
-  const { isTeacher } = useAuth();
-  const { title, content, objectives, source } = assignment;
+  const { title, content, objectives } = assignment;
   const sortedObjectives = objectives.sort((a, b) => a.number - b.number);
 
   return (
     <>
-      <Typography variant='h4' sx={{ fontWeight: 'bold' }}>
-        {isTeacher ? <Link href={source}>{title}</Link> : title}
-      </Typography>
+      <Typography variant='h4' sx={{ fontWeight: 'bold' }}>{title}</Typography>
 
-      {includeContent && <Markdown>{content}</Markdown>}
+      {includeContent && 
+        <Box sx={{ border: { xs: 0, sm: 1 }, p: { xs: 0, sm: 2 }, mt: 2 }}>
+          <Markdown>{content}</Markdown>
+        </Box>
+      }
 
       <Divider sx={{ my: 4 }} />
-      <Box border={1} padding={4}>
+      <Box sx={{ border: { xs: 0, sm: 1 }, p: { xs: 0, sm: 2 }, mt: 2 }}>
         <Typography variant='h5'>Objectives</Typography>
         <List>
           {sortedObjectives?.map(objective => (

@@ -3,6 +3,7 @@ import { db } from 'services/firebase.js';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { doc, collection, collectionGroup, getDoc, getDocs, setDoc, query, orderBy, where, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { useStudentCourseAssignments } from './useStudentData';
+import { useFirestoreSubscription } from './useFirestoreSubscription';
 
 const fetchTracks = async () => {
   console.log(`fetching all tracks`);
@@ -235,11 +236,17 @@ export const useTracksWithStudents = () => {
 }
 
 export const useAssignmentTemplate = ({ trackId, courseId, templateId }) => {
+  const queryKey = ['assignmentTemplate', trackId, courseId, templateId];
+
   const { data: template } = useQuery({
-    queryKey: ['assignmentTemplate', trackId, courseId, templateId],
+    queryKey,
     queryFn: () => fetchAssignmentTemplate(trackId, courseId, templateId),
-    enabled: !!trackId && !!courseId && !!templateId
+    enabled: !!trackId && !!courseId && !!templateId,
   });
+
+  const docPath = ['tracks', trackId, 'courses', courseId, 'assignmentTemplates', templateId];
+  useFirestoreSubscription(queryKey, docPath);
+
   return { template };
 }
 

@@ -12,6 +12,7 @@ import { ThemeProviderWrapper } from 'contexts/ThemeContext';
 import Loading from 'components/Layout/Loading';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from 'lib/queryClient';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { NotificationProvider } from 'contexts/NotificationContext';
 import { Notification } from 'components/Layout/Notification';
 import { studentRoutes } from 'student/routes';
@@ -53,6 +54,7 @@ export default function App() {
       <ThemeProviderWrapper>
         <NotificationProvider>
           <QueryClientProvider client={queryClient}>
+            <ReactQueryDevtools initialIsOpen={false} />
             <AuthProvider>
               <RouterProvider router={router} />
             </AuthProvider>
