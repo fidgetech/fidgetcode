@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { Typography, Button, Link, Box, TextField, Alert } from '@mui/material';
+import { useParams, Navigate } from 'react-router-dom';
+import { Typography, Button, Link, Box, TextField, Alert, Stack } from '@mui/material';
 import { useCourse } from 'hooks/useStudentData';
 import { useAssignmentTemplate } from 'hooks/useTeacherData';
 import { AssignmentContent } from 'student/Assignment/AssignmentContent';
@@ -10,17 +10,20 @@ import { getFunctions, httpsCallable } from 'firebase/functions';
 import { useFirestoreSubmit } from 'hooks/useFirestoreSubmit';
 
 const functions = getFunctions();
-const validateUrl = httpsCallable(functions, 'githubValidateUrl');
+const validateUrl = httpsCallable(functions, 'githubFetchOnCall');
 
 export const Template = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [alert, setAlert] = useState(null);
-  const { updateData } = useFirestoreSubmit();
+  const { updateData, deleteData } = useFirestoreSubmit();
   const { trackId, courseSlug, templateId } = useParams();
   const { course } = useCourse({ trackId, courseSlug });
 
   const { template } = useAssignmentTemplate({ trackId, courseId: course.id, templateId });
   const [newSourceUrl, setNewSourceUrl] = useState(template.source);
+  const [newNumber, setNewNumber] = useState(template.number);
+  const [deleting, setDeleting] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
 
   const { setBreadcrumbs } = useBreadcrumbs();
   useEffect(() => {
@@ -32,7 +35,7 @@ export const Template = () => {
     ]);
   }, [setBreadcrumbs]);
 
-  const confirmDialogOptions = {
+  const sourceDialogOptions = {
     title: 'Really change template source?',
     message: `This will overwrite existing title, content and objectives!`,
     onConfirm: async () => {
@@ -53,13 +56,40 @@ export const Template = () => {
       setAlert({ severity: 'success', message: 'Source updated!' });
     }
   };
-  const { showConfirm } = useDialog();
-  const handleShowConfirm = () => showConfirm(confirmDialogOptions);
+
+  const deleteDialogOptions = {
+    title: 'Really delete this template?',
+    message: `This cannot be undone!`,
+    onConfirm: async () => {
+      console.log('deleting template');
+      setDeleting(true);
+      const docPath = ['tracks', trackId, 'courses', course.id, 'assignmentTemplates', template.id];
+      await deleteData(docPath);
+      setRedirecting(true);
+    }
+  };
+
+  const { showDialog } = useDialog();
+  const handleShowSourceDialog = () => showDialog(sourceDialogOptions);
+  const handleShowDeleteDialog = () => showDialog(deleteDialogOptions);
 
   const handleEditSource = () => {
     setAlert(null);
     setNewSourceUrl(template.source);
     setIsEditing(true);
+  }
+
+  const handleUpdateNumber = async () => {
+    console.log('updating order to', newNumber);
+    setIsEditing(false);
+    const docPath = ['tracks', trackId, 'courses', course.id, 'assignmentTemplates', template.id];
+    const updatedTemplate = { ...template, number: parseFloat(newNumber) };
+    await updateData(docPath, updatedTemplate);
+    setAlert({ severity: 'success', message: 'Order updated!' });
+  }
+
+  if (redirecting) {
+    return <Navigate to={`/teacher/tracks/${trackId}/courses/${courseSlug}`} />;
   }
 
   return (
@@ -70,26 +100,38 @@ export const Template = () => {
 
       <Typography variant='h6'>Independent Project Template</Typography>
 
-      <Box sx={{ my: 2 }}>
+      <Box sx={{ mb: 2 }}>
         {isEditing ?
           <>
-            <TextField
-              label="GitHub Source URL"
-              value={newSourceUrl}
-              onChange={(e) => setNewSourceUrl(e.target.value)}
-              fullWidth
-            />
-            <Button color='error' onClick={handleShowConfirm} disabled={newSourceUrl === template.source}>Update source URL</Button>
+            <Box sx={{ my: 4 }}>
+              <TextField
+                label="GitHub Source URL"
+                value={newSourceUrl}
+                onChange={(e) => setNewSourceUrl(e.target.value)}
+                fullWidth
+              />
+              <Button color='warning' onClick={handleShowSourceDialog} disabled={newSourceUrl === template.source}>Update source URL</Button>
+            </Box>
+            <Box sx={{ my: 4 }}>
+              <TextField
+                label="Order"
+                value={newNumber}
+                onChange={(e) => setNewNumber(e.target.value)}
+                fullWidth
+              />
+              <Button color='warning' onClick={handleUpdateNumber} disabled={newNumber === template.number}>Update order</Button>
+            </Box>
           </>
         :
-          <>
-            <Button color='info'><Link href={template.source}>view linked file</Link></Button>
-            <Button color='warning' onClick={handleEditSource}>change source url</Button>
-          </>
+          <Stack direction="row" spacing={3}>
+            <Button color='info'><Link href={template.source} sx={{ textDecoration: 'none' }}>View linked file</Link></Button>
+            <Button color='warning' onClick={handleEditSource}>Edit</Button>
+            <Button color='error' onClick={handleShowDeleteDialog}>Delete</Button>
+          </Stack>
         }
       </Box>
 
-      <AssignmentContent assignment={template} />
+      {!deleting && <AssignmentContent assignment={template} />}
     </>
   );
 }

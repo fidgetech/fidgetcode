@@ -1,6 +1,5 @@
-import { useAuth } from 'contexts/AuthContext';
 import Markdown from 'react-markdown';
-import { Link, List, ListItem, ListItemText, Typography, Box, Divider, Button } from '@mui/material';
+import { List, ListItem, ListItemText, Typography, Box, Divider } from '@mui/material';
 
 export const AssignmentContent = ({ assignment, includeContent=true }) => {
   const { title, content, objectives } = assignment;

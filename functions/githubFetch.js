@@ -4,18 +4,17 @@ import { createAppAuth } from '@octokit/auth-app';
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { logger } from 'firebase-functions/v2';
 
-export const githubValidateUrl = onCall(async (data) => {
+export const githubFetchOnCall = onCall(async (data) => {
   const { url } = data.data;
+  console.log('Fetching from', url);
   try {
     const { title, objectives, content } = await githubFetch({ url });
-    if (!title || !content || !objectives) {
-      throw new Error('Invalid file');
-    }
+    if (!title || !content || !objectives) throw new Error('Invalid file');
+    return { title, objectives, content };
   } catch (error) {
     logger.error('Failed to fetch or parse file:', error);
     throw new HttpsError('invalid-argument', 'Invalid URL or file content');
   }
-  return { success: true };
 });
 
 export const githubFetch = async ({ path=null, url=null }) => {

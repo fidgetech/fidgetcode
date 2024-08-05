@@ -126,11 +126,16 @@ export const useStudents = ({ active }) => {
 }
 
 export const useCourseAssignmentTemplates = ({ trackId, courseId }) => {
+  const collectionPath = ['tracks', trackId, 'courses', courseId, 'assignmentTemplates'];
+
   const { data: assignmentTemplates } = useQuery({
-    queryKey: ['courseAssignmentTemplates', trackId, courseId],
+    queryKey: collectionPath,
     queryFn: () => fetchCourseAssignmentTemplates(trackId, courseId),
-    enabled: !!courseId && !!trackId
+    enabled: !!trackId && !!courseId
   });
+
+  useFirestoreSubscription({ collectionPath, sort: 'number' });
+
   return { assignmentTemplates };
 }
 
@@ -236,16 +241,15 @@ export const useTracksWithStudents = () => {
 }
 
 export const useAssignmentTemplate = ({ trackId, courseId, templateId }) => {
-  const queryKey = ['assignmentTemplate', trackId, courseId, templateId];
+  const docPath = ['tracks', trackId, 'courses', courseId, 'assignmentTemplates', templateId];
 
   const { data: template } = useQuery({
-    queryKey,
+    queryKey: docPath,
     queryFn: () => fetchAssignmentTemplate(trackId, courseId, templateId),
     enabled: !!trackId && !!courseId && !!templateId,
   });
 
-  const docPath = ['tracks', trackId, 'courses', courseId, 'assignmentTemplates', templateId];
-  useFirestoreSubscription(queryKey, docPath);
+  useFirestoreSubscription({ docPath });
 
   return { template };
 }

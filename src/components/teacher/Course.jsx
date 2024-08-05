@@ -7,6 +7,7 @@ import { StudentsList } from './StudentsList';
 import { AssignmentTemplatesList } from './AssignmentTemplatesList';
 import { useEffect } from 'react';
 import { useBreadcrumbs } from 'contexts/BreadcrumbsContext';
+import { TemplateNew } from './TemplateNew';
 
 export const Course = () => {
   const { trackId, courseSlug } = useParams();
@@ -37,6 +38,7 @@ export const Course = () => {
 
       <Typography variant='h6' sx={{ mt: 2 }}>Independent Project templates:</Typography>
       <AssignmentTemplatesList />
+      <TemplateNew trackId={trackId} courseId={course.id} />
     </>
   );
 }

@@ -22,8 +22,8 @@ export const AssignmentTemplateHandler = () => {
       navigate(`/teacher/students/${studentId}/courses/${courseSlug}`);
     }
   };
-  const { showConfirm } = useDialog();
-  const handleShowConfirm = () => showConfirm(confirmDialogOptions);
+  const { showDialog } = useDialog();
+  const handleShowConfirm = () => showDialog(confirmDialogOptions);
 
   return (
     <>
