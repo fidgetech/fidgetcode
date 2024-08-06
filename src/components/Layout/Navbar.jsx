@@ -79,18 +79,24 @@ export const Navbar = () => {
         </Box> */}
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-          <Typography component={Link} to='/' variant="h6" color='inherit' sx={{
-              textDecoration: 'none',
-              padding: '6px 16px',
-              borderRadius: '4px',
-              // display: { xs: isSignedIn ? 'none' : 'flex', sm: 'flex' },
-              '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.08)' },
-            }}
-          >
-            Code Central
-          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Typography component={Link} to='/' variant="h6" color='inherit' sx={{
+                textDecoration: 'none',
+                padding: '6px 16px',
+                borderRadius: '4px',
+                // display: { xs: isSignedIn ? 'none' : 'flex', sm: 'flex' },
+                '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.08)' },
+              }}
+            >
+              Code Central
+            </Typography>
 
-          <Box>
+            {/* <Button color="inherit" component={Link} to="/item1">
+              Invite
+            </Button> */}
+          </Box>
+
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
             {isSignedIn ? (
               <>
                 <Button color="inherit" onClick={handleToggleAccountMenu}>

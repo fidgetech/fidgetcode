@@ -17,6 +17,7 @@ import { NotificationProvider } from 'contexts/NotificationContext';
 import { Notification } from 'components/Layout/Notification';
 import { studentRoutes } from 'student/routes';
 import { teacherRoutes } from 'teacher/routes';
+import { adminRoutes } from 'admin/routes';
 import { DialogProvider } from 'contexts/DialogContext';
 import { BreadcrumbsProvider } from 'contexts/BreadcrumbsContext';
 
@@ -41,6 +42,11 @@ export default function App() {
           element: <ProtectedRoute allowedRoles={['student']}><Outlet /></ProtectedRoute>,
           children: studentRoutes
         },
+        {
+          path: 'admin/*',
+          element: <ProtectedRoute allowedRoles={['teacher']}><Outlet /></ProtectedRoute>,
+          children: adminRoutes
+        }
       ]
     },
     {

@@ -7,5 +7,6 @@ import { updateAssignmentStatus } from './submission.js';
 import { githubWebhook } from './githubWebhook.js';
 import { githubFetchOnCall } from './githubFetch.js';
 import { templateUpdated } from './templateUpdated.js';
+import { addUser } from './addUser.js';
 
-export { updateAssignmentStatus, githubWebhook, githubFetchOnCall, templateUpdated };
+export { updateAssignmentStatus, githubWebhook, githubFetchOnCall, templateUpdated, addUser };

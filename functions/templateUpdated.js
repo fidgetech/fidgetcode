@@ -2,12 +2,10 @@
 
 import { logger } from 'firebase-functions/v2';
 import { onDocumentUpdated } from 'firebase-functions/v2/firestore';
-import { getFirestore } from 'firebase-admin/firestore';
 import { initializeApp, getApps } from 'firebase-admin/app';
 import { githubFetch } from './githubFetch.js';
 
 if (!getApps().length) initializeApp();
-const db = getFirestore();
 
 const document = 'tracks/{trackId}/courses/{courseId}/assignmentTemplates/{templateId}';
 const fields = ['source'];
