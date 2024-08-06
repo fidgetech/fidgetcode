@@ -7,6 +7,7 @@ import { AssignmentSubmissions } from './AssignmentSubmissions';
 import { AssignmentReview } from './AssignmentReview';
 import { Typography, Divider, Alert, Button } from '@mui/material';
 import { AssignmentContent } from 'student/Assignment/AssignmentContent';
+import { AssignmentContentEdit } from 'teacher/AssignmentContentEdit';
 import { useBreadcrumbs } from 'contexts/BreadcrumbsContext';
 
 const statusMapping = {
@@ -25,6 +26,7 @@ export const AssignmentHandler = () => {
   const { assignment } = useAssignment({ studentId, assignmentId });
   const [ assignmentStatus, setAssignmentStatus ] = useState(assignment.status);
   const [ statusConfig, setStatusConfig ] = useState(statusMapping[assignmentStatus]);
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     setStatusConfig(statusMapping[assignmentStatus]);
@@ -41,6 +43,10 @@ export const AssignmentHandler = () => {
     ]);
   }, [setBreadcrumbs]);
 
+  const handleEditSource = () => {
+    setIsEditing(true);
+  }
+
   return (
     <>
       <Typography variant='h6' gutterBottom>
@@ -50,24 +56,35 @@ export const AssignmentHandler = () => {
         {statusConfig.message || `Not yet assigned to ${student.name}`}
       </Alert>
 
+      {!isEditing && <Button color='warning' onClick={handleEditSource}>Edit assignment for {student.name}</Button>}
+
       <Divider sx={{ my: 4 }} />
 
-      <AssignmentContent assignment={assignment} />
+      {isEditing &&
+        <AssignmentContentEdit assignment={assignment} student={student} />
+      }
 
-      {assignmentStatus &&
+
+      {!isEditing &&
         <>
-          <Divider sx={{ my: 4 }} />
-          <AssignmentSubmissions assignment={assignment} />
-          {assignmentStatus === 'submitted' &&
+          <AssignmentContent assignment={assignment} />
+
+          {assignmentStatus &&
             <>
               <Divider sx={{ my: 4 }} />
-              <AssignmentReview assignment={assignment} setAssignmentStatus={setAssignmentStatus} />
+              <AssignmentSubmissions assignment={assignment} />
+              {assignmentStatus === 'submitted' &&
+                <>
+                  <Divider sx={{ my: 4 }} />
+                  <AssignmentReview assignment={assignment} setAssignmentStatus={setAssignmentStatus} />
+                </>
+              }
+              {(assignmentStatus === 'fail' || assignmentStatus === 'pass') &&
+                <Button variant='contained' color='error' sx={{ my: 2}} onClick={() => setAssignmentStatus('submitted')}>
+                  Redo review
+                </Button>
+              }
             </>
-          }
-          {(assignmentStatus === 'fail' || assignmentStatus === 'pass') &&
-            <Button variant='contained' color='error' sx={{ my: 2}} onClick={() => setAssignmentStatus('submitted')}>
-              Redo review
-            </Button>
           }
         </>
       }
