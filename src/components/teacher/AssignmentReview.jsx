@@ -39,7 +39,7 @@ export const AssignmentReview = ({ assignment, setAssignmentStatus }) => {
       setValidationError('Please fill out all fields');
       return;
     }
-    const status = Object.values(objectives).every(value => value === 'all') ? 'pass' : 'fail';
+    const status = Object.values(objectives).some(value => value === 'none') ? 'fail' : 'pass';
     const docPath = ['students', assignment.studentId, 'assignments', assignment.id, 'submissions', latestSubmission.id];
     const updatedSubmission = {
       ...latestSubmission,
