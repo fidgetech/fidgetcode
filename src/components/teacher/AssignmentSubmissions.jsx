@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { useAssignmentSubmissions } from 'hooks/useTeacherData';
 import { Box, Divider, Typography, List, Card, CardContent, Accordion, AccordionSummary, AccordionDetails, Link, ListItem, ListItemText } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { formatMarkdownForRender, localeOptions } from 'utils/helpers';
+import { formatMarkdownForRender, localeOptions, getGradeColor } from 'utils/helpers';
 
 const gradeMapping = {
   'none': 'Does not meet this standard yet',
@@ -96,8 +96,8 @@ const SubmissionNotes = ({ assignment, submission }) => {
             <List>
               {
                 objectives.map(objective => (
-                  <ListItem key={objective.number}>
-                    <ListItemText primary={objective.content} secondary={objective.grade} />
+                  <ListItem key={objective.number} sx={{ backgroundColor: getGradeColor(objective.grade) }}>
+                    <ListItemText primary={objective.content} secondary={objective.grade} primaryTypographyProps={{ style: { fontWeight: 'bold' } }} />
                   </ListItem>
                 ))
               }

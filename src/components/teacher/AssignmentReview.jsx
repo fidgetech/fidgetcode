@@ -1,13 +1,13 @@
 import { useState, useMemo } from 'react';
 import { Formik, Form, FieldArray } from 'formik';
-import { Alert, Typography, List, ListItem, ListItemText, MenuItem, FormControl, Select, Button } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
+import { Alert, Typography, List, ListItem, ListItemText, FormControl, Button } from '@mui/material';
 import { useFirestoreSubmit } from 'hooks/useFirestoreSubmit';
 import { serverTimestamp } from 'firebase/firestore';
 import { useAssignmentSubmissions } from 'hooks/useTeacherData';
 import Loading from 'components/Layout/Loading';
 import { TextAreaInput, SelectInput } from 'shared/Inputs.jsx';
 import { useAuth } from 'contexts/AuthContext';
+import { getGradeColor } from 'utils/helpers';
 
 const generateInitialValues = (objectives) => {
   let initialValues = { note: '', objectives: {} };
@@ -25,20 +25,11 @@ const selectOptions = [
 
 export const AssignmentReview = ({ assignment, setAssignmentStatus }) => {
   console.log('rendering AssignmentReview')
-  const theme = useTheme();
   const { loading, error, updateData } = useFirestoreSubmit();
   const [ validationError, setValidationError ] = useState(null);
   const { submissions } = useAssignmentSubmissions({ studentId: assignment.studentId, assignmentId: assignment.id });
   const latestSubmission = useMemo(() => submissions[0], [submissions]);
   const { currentUser } = useAuth();
-
-  const getBackgroundColor = (value) => {
-    switch (value) {
-      case 'all': return theme.palette.green.main;
-      case 'some': return theme.palette.orange.main;
-      case 'none': return theme.palette.red.main;
-    }
-  };
 
   const handleSubmit = async (values, { setSubmitting }) => {
     console.log(values)
@@ -91,7 +82,7 @@ export const AssignmentReview = ({ assignment, setAssignmentStatus }) => {
                           displayEmpty
                           inputProps={{ 'aria-label': 'Score' }}
                           required={true}
-                          sx={{ backgroundColor: getBackgroundColor(values.objectives[objective.number]) }}
+                          sx={{ backgroundColor: getGradeColor(values.objectives[objective.number]) }}
                         />
                       </FormControl>
                     </ListItem>
