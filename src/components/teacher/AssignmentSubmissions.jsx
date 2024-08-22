@@ -99,7 +99,7 @@ const SubmissionNotes = ({ assignment, submission }) => {
             <List>
               {
                 objectives.map(objective => (
-                  <ListItem key={objective.number} sx={{ backgroundColor: getGradeColor(theme, objective.grade) }}>
+                  <ListItem key={objective.number} sx={{ my: 1, backgroundColor: getGradeColor(theme, objective.grade) }}>
                     <ListItemText primary={objective.content} secondary={objective.grade} primaryTypographyProps={{ style: { fontWeight: 'bold' } }} />
                   </ListItem>
                 ))

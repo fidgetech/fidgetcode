@@ -10,10 +10,10 @@ import { useAuth } from 'contexts/AuthContext';
 import { useTheme } from '@mui/material/styles';
 import { getGradeColor } from 'utils/helpers';
 
-const generateInitialValues = (objectives) => {
+const generateInitialValues = (latestSubmissionWithReview, objectives) => {
   let initialValues = { note: '', objectives: {} };
   objectives.forEach(objective => {
-    initialValues.objectives[objective.number] = '';
+    initialValues.objectives[objective.number] = latestSubmissionWithReview?.review?.objectives[objective.number] || '';
   });
   return initialValues;
 };
@@ -30,6 +30,7 @@ export const AssignmentReview = ({ assignment, setAssignmentStatus }) => {
   const [ validationError, setValidationError ] = useState(null);
   const { submissions } = useAssignmentSubmissions({ studentId: assignment.studentId, assignmentId: assignment.id });
   const latestSubmission = useMemo(() => submissions[0], [submissions]);
+  const latestSubmissionWithReview = useMemo(() => submissions.find(submission => submission.review), [submissions]);
   const { currentUser } = useAuth();
   const theme = useTheme();
 
@@ -63,8 +64,9 @@ export const AssignmentReview = ({ assignment, setAssignmentStatus }) => {
     return <Loading text='Please wait...' />;
   }
 
+  console.log('AssignmentReview rendering with latestSubmission:', latestSubmissionWithReview);
   return (
-    <Formik initialValues={generateInitialValues(assignment.objectives)} onSubmit={handleSubmit}>
+    <Formik initialValues={generateInitialValues(latestSubmissionWithReview, assignment.objectives)} onSubmit={handleSubmit}>
       {({ isSubmitting, values }) => (
         <Form sx={{ mt: 1 }}>
           {(error || validationError) && <Alert severity="error" sx={{ my: 2 }}>{error?.message || validationError}</Alert>}
