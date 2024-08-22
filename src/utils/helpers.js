@@ -1,6 +1,5 @@
 // import DOMPurify from 'dompurify';
 import { query, where, getDocs } from 'firebase/firestore';
-import { useTheme } from '@mui/material/styles';
 
 // fetch all documents from a collection where field is in a list of ids
 export async function fetchDocumentsInChunks(collectionRef, field, ids, chunkSize = 10) {
@@ -39,9 +38,7 @@ export const localeOptions = { year: 'numeric', month: 'numeric', day: 'numeric'
 //   return sanitizeValue(obj);
 // };
 
-export const getGradeColor = (grade) => {
-  console.log('grade', grade)
-  const theme = useTheme();
+export const getGradeColor = (theme, grade) => {
   switch (grade) {
     case 'all': return theme.palette.green.main;
     case 'Meets standard all of the time': return theme.palette.green.main;

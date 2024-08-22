@@ -7,6 +7,7 @@ import { useAssignmentSubmissions } from 'hooks/useTeacherData';
 import Loading from 'components/Layout/Loading';
 import { TextAreaInput, SelectInput } from 'shared/Inputs.jsx';
 import { useAuth } from 'contexts/AuthContext';
+import { useTheme } from '@mui/material/styles';
 import { getGradeColor } from 'utils/helpers';
 
 const generateInitialValues = (objectives) => {
@@ -30,6 +31,7 @@ export const AssignmentReview = ({ assignment, setAssignmentStatus }) => {
   const { submissions } = useAssignmentSubmissions({ studentId: assignment.studentId, assignmentId: assignment.id });
   const latestSubmission = useMemo(() => submissions[0], [submissions]);
   const { currentUser } = useAuth();
+  const theme = useTheme();
 
   const handleSubmit = async (values, { setSubmitting }) => {
     console.log(values)
@@ -82,7 +84,7 @@ export const AssignmentReview = ({ assignment, setAssignmentStatus }) => {
                           displayEmpty
                           inputProps={{ 'aria-label': 'Score' }}
                           required={true}
-                          sx={{ backgroundColor: getGradeColor(values.objectives[objective.number]) }}
+                          sx={{ backgroundColor: getGradeColor(theme, values.objectives[objective.number]) }}
                         />
                       </FormControl>
                     </ListItem>

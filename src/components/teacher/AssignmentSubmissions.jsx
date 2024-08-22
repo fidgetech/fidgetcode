@@ -4,6 +4,7 @@ import { useAssignmentSubmissions } from 'hooks/useTeacherData';
 import { Box, Divider, Typography, List, Card, CardContent, Accordion, AccordionSummary, AccordionDetails, Link, ListItem, ListItemText } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { formatMarkdownForRender, localeOptions, getGradeColor } from 'utils/helpers';
+import { useTheme } from '@mui/material/styles';
 
 const gradeMapping = {
   'none': 'Does not meet this standard yet',
@@ -61,6 +62,8 @@ export const AssignmentSubmissions = ({ assignment }) => {
 }
 
 const SubmissionNotes = ({ assignment, submission }) => {
+  const theme = useTheme();
+
   console.log('submission in SubmissionNotes', submission)
   const objectives = useMemo(() => {
     const assignmentObjectives = assignment.objectives;
@@ -96,7 +99,7 @@ const SubmissionNotes = ({ assignment, submission }) => {
             <List>
               {
                 objectives.map(objective => (
-                  <ListItem key={objective.number} sx={{ backgroundColor: getGradeColor(objective.grade) }}>
+                  <ListItem key={objective.number} sx={{ backgroundColor: getGradeColor(theme, objective.grade) }}>
                     <ListItemText primary={objective.content} secondary={objective.grade} primaryTypographyProps={{ style: { fontWeight: 'bold' } }} />
                   </ListItem>
                 ))
