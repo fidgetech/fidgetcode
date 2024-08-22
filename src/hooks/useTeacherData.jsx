@@ -75,7 +75,6 @@ const fetchAssignmentsAwaitingReview = async () => {
   const assignmentsRef = collectionGroup(db, 'assignments');
   const assignmentsQuery = query(assignmentsRef, where('status', '==', 'submitted'));
   const assignmentsSnapshot = await getDocs(assignmentsQuery);
-  console.log('assignmentsSnapshot', assignmentsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
   return assignmentsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 }
 

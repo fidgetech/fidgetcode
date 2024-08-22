@@ -46,5 +46,9 @@ export const getGradeColor = (theme, grade) => {
     case 'Meets standard some of the time': return theme.palette.orange.main;
     case 'none': return theme.palette.red.main;
     case 'Does not meet this standard yet': return theme.palette.red.main;
+    case 'pass': return theme.palette.green.main;
+    case 'fail': return theme.palette.red.main;
+    case 'submitted': return theme.palette.info.main;
+    case 'assigned': return theme.palette.orange.main;
   }
 };
